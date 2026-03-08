@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  /* Scholarly Color Palette */
+  --color-parchment: #FCFBF7;
+  --color-oxford-blue: #002147;
+  --color-brass: #B5A642;
+  --color-charcoal: #1A1A1A;
+  --color-ink: #001226;
+
+  /* Academic Spacing & Border Radius */
+  --radius-academic: 2px;
+  --shadow-scholarly: 0 10px 30px -10px rgba(0, 33, 71, 0.08);
+
+  /* Fonts */
+  --font-serif: "Lora", serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+:root {
+  background-color: var(--color-parchment);
+  color: var(--color-charcoal);
+  font-family: var(--font-sans);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--color-parchment);
+}
+
+h1,
+h2,
+h3,
+h4,
+.font-serif {
+  font-family: var(--font-serif);
+  color: var(--color-oxford-blue);
+  letter-spacing: -0.01em;
+  /* Reduced from -0.02em for better small-text clarity */
+  font-weight: 600;
+  /* Ensure serif headers have enough weight */
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+#root {
+  width: 100%;
+}
+
+/* Base Utility Overrides */
+.btn-academic {
+  @apply px-6 py-2 bg-oxford-blue text-parchment font-bold rounded-academic transition-all hover:bg-ink active:scale-95;
+}
+
+.card-academic {
+  @apply bg-white border border-oxford-blue/10 rounded-academic shadow-scholarly overflow-hidden;
+}
+
+.input-academic {
+  @apply w-full bg-parchment border border-oxford-blue/30 rounded-academic px-4 py-2 text-charcoal focus:outline-none focus:border-brass/50 transition-colors placeholder:text-charcoal/50;
+}
+
+/* Custom Accessibility Helpers */
+.text-muted-academic {
+  @apply text-charcoal/60 font-medium;
+  /* Increased contrast from /40 to /60 */
+}
+
+.text-label-academic {
+  @apply text-[11px] font-mono font-bold uppercase tracking-[0.1em] text-brass;
+}
