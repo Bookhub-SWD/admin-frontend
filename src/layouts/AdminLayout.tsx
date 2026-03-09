@@ -1,10 +1,12 @@
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, BookOpen, Users, FileBarChart, 
   Settings, LogOut, Bell, Search, Library, Calendar,
   ChevronLeft, Menu
 } from 'lucide-react';
 import { useState } from 'react';
+import { signOut, type UserProfile } from '../services/auth';
+import { useSnackbar } from 'notistack';
 
 const SidebarItem = ({ icon: Icon, label, path, active, isExpanded }: { icon: any, label: string, path: string, active: boolean, isExpanded: boolean }) => (
   <Link 
@@ -27,7 +29,34 @@ const SidebarItem = ({ icon: Icon, label, path, active, isExpanded }: { icon: an
 
 const AdminLayout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(true);
+  
+  // Read profile synchronously from localStorage
+  const [profile] = useState<UserProfile | null>(() => {
+    const saved = localStorage.getItem('bookhub_profile');
+    return saved ? JSON.parse(saved) : null;
+  });
+  
+  const { enqueueSnackbar } = useSnackbar();
+
+  const handleLogout = async () => {
+    console.log('AdminLayout: Logout initiated');
+    try {
+      await signOut();
+    } catch (error: any) {
+      console.error('Logout error caught:', error.message || error);
+    } finally {
+      console.log('AdminLayout: Finalizing logout, navigating to login');
+      enqueueSnackbar('Session terminated. Logged out successfully.', { variant: 'default' });
+      navigate('/login', { replace: true });
+    }
+  };
+
+  const getInitials = (name: string | null) => {
+    if (!name) return '??';
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
 
   const menuItems = [
     { icon: LayoutDashboard, label: 'DASHBOARD', path: '/' },
@@ -41,7 +70,7 @@ const AdminLayout = () => {
   return (
     <div className="flex h-screen bg-parchment overflow-hidden font-sans">
       {/* Sidebar - The Vertical Spine */}
-      <aside className={`bg-oxford-blue flex flex-col shadow-2xl z-20 transition-all duration-300 ease-in-out ${isExpanded ? 'w-72' : 'w-20'}`}>
+      <aside className={`bg-oxford-blue flex flex-col shadow-2xl z-30 transition-all duration-300 ease-in-out ${isExpanded ? 'w-72' : 'w-20'}`}>
         <div className={`p-6 mb-4 flex items-center justify-between ${isExpanded ? '' : 'flex-col gap-4'}`}>
           <Link to="/" className={`flex items-center gap-3 group transition-all duration-300 ${isExpanded ? 'opacity-100' : 'scale-75'}`}>
             <div className="bg-brass p-2 rounded-academic rotate-3 group-hover:rotate-0 transition-transform shrink-0">
@@ -76,9 +105,13 @@ const AdminLayout = () => {
           </div>
         </nav>
 
-        <div className={`p-4 border-t border-parchment/5 transition-all duration-300 ${isExpanded ? 'p-8' : 'p-4 flex justify-center'}`}>
-          <button className={`flex items-center gap-3 px-4 py-3 text-parchment/60 hover:text-red-400 transition-colors duration-300 font-mono text-xs font-black uppercase tracking-widest overflow-hidden ${isExpanded ? 'w-full' : 'w-auto p-2 justify-center'}`}>
-            <LogOut className="h-4 w-4 shrink-0" />
+        <div className={`p-4 border-t border-parchment/5 transition-all duration-300 relative z-40 ${isExpanded ? 'p-8' : 'p-4 flex justify-center'}`}>
+          <button 
+            onClick={handleLogout}
+            className={`flex items-center gap-3 px-4 py-3 text-parchment/60 hover:text-red-400 hover:bg-white/5 rounded-md transition-all duration-300 font-mono text-xs font-black uppercase tracking-widest overflow-hidden group/logout ${isExpanded ? 'w-full' : 'w-auto p-2 justify-center'}`}
+            title="Log out from system"
+          >
+            <LogOut className="h-4 w-4 shrink-0 transition-transform group-hover/logout:-translate-x-1" />
             {isExpanded && <span className="animate-in fade-in duration-300">Terminate Session</span>}
           </button>
         </div>
@@ -107,12 +140,16 @@ const AdminLayout = () => {
             </button>
             <div className="flex items-center gap-4 border-l border-oxford-blue/10 pl-8">
               <div className="text-right">
-                <div className="text-sm font-serif font-black text-oxford-blue leading-none">Prof. Admin User</div>
-                <div className="text-xs text-brass uppercase font-mono font-black tracking-widest mt-1">Chief Librarian</div>
+                <div className="text-sm font-serif font-black text-oxford-blue leading-none">{profile?.full_name || 'Archivist'}</div>
+                <div className="text-xs text-brass uppercase font-mono font-black tracking-widest mt-1">{profile?.roles?.name || 'Staff'}</div>
               </div>
-              <div className="h-12 w-12 rounded-academic bg-oxford-blue flex items-center justify-center border-t-2 border-brass/50 shadow-lg relative group overflow-hidden">
-                <span className="text-parchment font-serif font-bold text-lg relative z-10">AU</span>
-                <div className="absolute inset-0 bg-brass/10 translate-y-full group-hover:translate-y-0 transition-transform"></div>
+              <div className="h-12 w-12 rounded-academic bg-parchment flex items-center justify-center border-2 border-brass/50 shadow-md relative group overflow-hidden">
+                {profile?.avatar_url ? (
+                  <img src={profile.avatar_url} alt="User Avatar" className="h-full w-full object-cover" />
+                ) : (
+                  <span className="text-oxford-blue font-serif font-black text-lg relative z-10">{getInitials(profile?.full_name || 'Archivist')}</span>
+                )}
+                <div className="absolute inset-0 bg-brass/20 translate-y-full group-hover:translate-y-0 transition-transform"></div>
               </div>
             </div>
           </div>
