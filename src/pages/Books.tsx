@@ -1,13 +1,51 @@
-import { Plus, Search, Filter, MoreHorizontal, BookMarked, Layers, User } from 'lucide-react';
+import { Plus, Search, Filter, MoreHorizontal, BookMarked, Layers, User, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import api from '../services/api';
+import ImportExcelModal from '../components/ImportExcelModal';
+import AddBookModal from '../components/AddBookModal';
+import ManageCopiesModal from '../components/ManageCopiesModal';
+
+
+
+interface Book {
+  id: string;
+  title: string;
+  author: string;
+  subjects?: { subject: { category: string } }[];
+  status?: string;
+  total_copies: number;
+  available_copies: number;
+}
 
 const Books = () => {
-  const books = [
-    { id: 'ISBN-01-978', title: 'The Pragmatic Programmer', author: 'Andy Hunt', category: 'Software Engineering', status: 'In Stock' },
-    { id: 'ISBN-02-978', title: 'Clean Code: A Handbook', author: 'Robert C. Martin', category: 'Software Engineering', status: 'Borrowed' },
-    { id: 'ISBN-03-978', title: 'Atomic Habits', author: 'James Clear', category: 'Applied Psychology', status: 'In Stock' },
-    { id: 'ISBN-04-978', title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', category: 'Classic Literature', status: 'In Stock' },
-    { id: 'ISBN-05-978', title: 'Structure & Interpretation', author: 'Harold Abelson', category: 'Computer Science', status: 'Borrowed' },
-  ];
+  const [books, setBooks] = useState<Book[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isCopiesModalOpen, setIsCopiesModalOpen] = useState(false);
+  const [selectedBook, setSelectedBook] = useState<{id: string, title: string} | null>(null);
+  const [totalItems, setTotalItems] = useState(0);
+
+
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get('/books', { params: { limit: 10 } });
+      if (res.data.ok) {
+        setBooks(res.data.data);
+        setTotalItems(res.data.pagination.total_items);
+      }
+    } catch (err) {
+      console.error('Books: Error fetching data', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <div className="p-10 space-y-10 animate-in fade-in duration-500">
@@ -18,13 +56,20 @@ const Books = () => {
           <p className="text-charcoal/70 font-sans font-medium italic">Manage your library inventory, status, and book assets.</p>
         </div>
         <div className="flex gap-4">
-          <button className="px-6 py-2 border border-oxford-blue/30 text-oxford-blue font-mono text-xs font-black uppercase tracking-widest hover:bg-oxford-blue/5 transition-colors rounded-academic">
+          <button 
+            onClick={() => setIsImportModalOpen(true)}
+            className="px-6 py-2 border border-oxford-blue/30 text-oxford-blue font-mono text-xs font-black uppercase tracking-widest hover:bg-oxford-blue/5 transition-colors rounded-academic cursor-pointer"
+          >
             Import Excel
           </button>
-          <button className="btn-academic flex items-center gap-2 text-xs">
+          <button 
+            onClick={() => setIsAddModalOpen(true)}
+            className="btn-academic flex items-center gap-2 text-xs cursor-pointer"
+          >
             <Plus className="h-4 w-4" />
             Add New Book
           </button>
+
         </div>
       </div>
 
@@ -35,7 +80,7 @@ const Books = () => {
           <div className="flex gap-8">
             <div className="flex items-center gap-2 group cursor-pointer">
               <BookMarked className="h-4 w-4 text-brass" />
-              <span className="text-xs font-mono font-black text-oxford-blue uppercase tracking-widest border-b border-brass/50">Total Books: 12,450</span>
+              <span className="text-xs font-mono font-black text-oxford-blue uppercase tracking-widest border-b border-brass/50">Total Books: {totalItems.toLocaleString()}</span>
             </div>
             <div className="flex items-center gap-2 group cursor-pointer">
               <Layers className="h-4 w-4 text-oxford-blue/40" />
@@ -51,7 +96,7 @@ const Books = () => {
                 className="bg-white border border-oxford-blue/20 rounded-academic pl-10 pr-4 py-2 text-xs text-charcoal focus:outline-none focus:border-brass/30 w-64 uppercase font-mono font-black tracking-widest"
               />
             </div>
-            <button className="p-2 border border-oxford-blue/10 rounded-academic text-oxford-blue/40 hover:text-brass transition-colors">
+            <button className="p-2 border border-oxford-blue/10 rounded-academic text-oxford-blue/40 hover:text-brass transition-colors cursor-pointer">
               <Filter className="h-4 w-4" />
             </button>
           </div>
@@ -68,51 +113,121 @@ const Books = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-oxford-blue/5">
-            {books.map((book) => (
-              <tr key={book.id} className="hover:bg-parchment/50 transition-colors group">
-                <td className="px-8 py-6 border-r border-oxford-blue/5">
-                  <div className="text-lg font-serif font-black text-oxford-blue leading-tight group-hover:text-brass transition-colors">{book.title}</div>
-                  <div className="flex items-center gap-2 text-xs text-charcoal/60 font-black uppercase tracking-widest mt-1">
-                    <User className="h-3.5 w-3.5" /> {book.author}
+            {loading ? (
+              <tr>
+                <td colSpan={5} className="px-8 py-20 text-center">
+                  <div className="flex flex-col items-center gap-4">
+                    <Loader2 className="h-8 w-8 text-oxford-blue animate-spin" />
+                    <span className="text-xs font-mono font-black text-oxford-blue/40 uppercase tracking-[0.3em]">Accessing Library Archives...</span>
                   </div>
-                </td>
-                <td className="px-8 py-6 border-r border-oxford-blue/5">
-                  <div className="font-mono text-xs font-black text-brass uppercase tracking-widest bg-brass/5 px-2 py-1 rounded-sm inline-block">{book.id}</div>
-                </td>
-                <td className="px-8 py-6 border-r border-oxford-blue/5">
-                  <span className="text-xs font-mono font-black text-charcoal/80 uppercase tracking-widest border border-oxford-blue/20 px-2 py-1 rounded-academic">{book.category}</span>
-                </td>
-                <td className="px-8 py-6 border-r border-oxford-blue/5">
-                  <div className="flex items-center gap-2">
-                    <div className={`h-1.5 w-1.5 rounded-full ${
-                      book.status === 'In Stock' ? 'bg-brass shadow-[0_0_8px_var(--color-brass)]' : 
-                      book.status === 'Borrowed' ? 'bg-oxford-blue animate-pulse' : 'bg-charcoal/20'
-                    }`}></div>
-                    <span className={`text-xs font-mono font-black uppercase tracking-widest ${
-                      book.status === 'In Stock' ? 'text-brass' : 'text-oxford-blue/80'
-                    }`}>
-                      {book.status}
-                    </span>
-                  </div>
-                </td>
-                <td className="px-8 py-6 text-right">
-                   <button className="text-oxford-blue/20 hover:text-brass transition-colors">
-                      <MoreHorizontal className="h-5 w-5" />
-                   </button>
                 </td>
               </tr>
-            ))}
+            ) : books.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="px-8 py-20 text-center text-xs font-mono font-black text-charcoal/40 uppercase tracking-widest italic">
+                  No records found in the library.
+                </td>
+              </tr>
+            ) : (
+              books.map((book) => (
+                <tr key={book.id} className="hover:bg-parchment/50 transition-colors group">
+                  <td className="px-8 py-6 border-r border-oxford-blue/5">
+                    <div className="text-lg font-serif font-black text-oxford-blue leading-tight group-hover:text-brass transition-colors">{book.title}</div>
+                    <div className="flex items-center gap-2 text-xs text-charcoal/60 font-black uppercase tracking-widest mt-1">
+                      <User className="h-3.5 w-3.5" /> {book.author}
+                    </div>
+                  </td>
+                  <td className="px-8 py-6 border-r border-oxford-blue/5">
+                    <div className="font-mono text-xs font-black text-brass uppercase tracking-widest bg-brass/5 px-2 py-1 rounded-sm inline-block">{book.id}</div>
+                  </td>
+                  <td className="px-8 py-6 border-r border-oxford-blue/5">
+                    <span className="text-xs font-mono font-black text-charcoal/80 uppercase tracking-widest border border-oxford-blue/20 px-2 py-1 rounded-academic">
+                       {book.subjects?.[0]?.subject?.category || 'Uncategorized'}
+                    </span>
+                  </td>
+                  <td className="px-8 py-6 border-r border-oxford-blue/5">
+                    <div className="flex items-center gap-2">
+                      <div className={`h-1.5 w-1.5 rounded-full ${
+                        book.available_copies > 0 ? 'bg-brass shadow-[0_0_8px_var(--color-brass)]' : 'bg-oxford-blue animate-pulse'
+                      }`}></div>
+                      <span className={`text-xs font-mono font-black uppercase tracking-widest ${
+                        book.available_copies > 0 ? 'text-brass' : 'text-oxford-blue/80'
+                      }`}>
+                        {book.available_copies > 0 ? 'In Stock' : 'Borrowed'} ({book.available_copies}/{book.total_copies})
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-8 py-6 text-right">
+                    <div className="flex justify-end gap-2">
+                      <button 
+                        title="Manage Copies"
+                        onClick={() => {
+                          setSelectedBook({ id: book.id, title: book.title });
+                          setIsCopiesModalOpen(true);
+                        }}
+                        className="p-2 text-oxford-blue/20 hover:text-brass transition-colors cursor-pointer border border-transparent hover:border-brass/20 rounded-academic"
+                      >
+                        <Layers className="h-4 w-4" />
+                      </button>
+
+                      <button className="p-2 text-oxford-blue/20 hover:text-brass transition-colors cursor-pointer">
+                          <MoreHorizontal className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </td>
+
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
         
         <div className="p-6 bg-parchment/10 border-t border-oxford-blue/5 flex justify-between items-center text-xs font-mono font-black text-charcoal/60 uppercase tracking-[0.3em]">
-          <span>Showing 1-5 of 12,450 books</span>
-          <div className="flex gap-6">
-            <button className="hover:text-oxford-blue disabled:opacity-20 font-black" disabled>Previous Page</button>
-            <button className="hover:text-oxford-blue font-black">Next Page</button>
+          <span>Showing 1-{books.length} of {totalItems.toLocaleString()} books</span>
+          <div className="flex gap-4">
+            <button 
+              className="p-2 hover:text-oxford-blue disabled:opacity-20 font-black cursor-pointer border border-transparent hover:border-oxford-blue/10 rounded-academic transition-colors" 
+              disabled
+              title="Previous Page"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <button 
+              className="p-2 hover:text-oxford-blue font-black cursor-pointer border border-transparent hover:border-oxford-blue/10 rounded-academic transition-colors" 
+              onClick={() => fetchData()}
+              title="Refresh / Next"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
           </div>
         </div>
       </div>
+
+      <ImportExcelModal 
+        isOpen={isImportModalOpen} 
+        onClose={() => setIsImportModalOpen(false)} 
+        onSuccess={fetchData} 
+      />
+
+      <AddBookModal 
+        isOpen={isAddModalOpen} 
+        onClose={() => setIsAddModalOpen(false)} 
+        onSuccess={fetchData} 
+      />
+
+      {selectedBook && (
+        <ManageCopiesModal
+          isOpen={isCopiesModalOpen}
+          onClose={() => {
+            setIsCopiesModalOpen(false);
+            fetchData(); // Refresh to update copy counts
+          }}
+          bookId={selectedBook.id}
+          bookTitle={selectedBook.title}
+        />
+      )}
+
+
     </div>
   );
 };

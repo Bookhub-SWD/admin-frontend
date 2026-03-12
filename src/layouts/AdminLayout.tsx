@@ -1,6 +1,6 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { 
-  LayoutDashboard, BookOpen, Users, FileBarChart, 
+import {
+  LayoutDashboard, BookOpen, Users, FileBarChart,
   Settings, LogOut, Bell, Search, Library, Calendar,
   ChevronLeft, Menu
 } from 'lucide-react';
@@ -9,13 +9,12 @@ import { signOut, type UserProfile } from '../services/auth';
 import { useSnackbar } from 'notistack';
 
 const SidebarItem = ({ icon: Icon, label, path, active, isExpanded }: { icon: any, label: string, path: string, active: boolean, isExpanded: boolean }) => (
-  <Link 
+  <Link
     to={path}
-    className={`flex items-center gap-3 px-6 py-4 transition-all duration-300 border-l-2 ${
-      active 
-        ? 'bg-ink text-brass border-brass shadow-[inset_4px_0_0_0_var(--color-brass)]' 
+    className={`flex items-center gap-3 px-6 py-4 transition-all duration-300 border-l-2 ${active
+        ? 'bg-ink text-brass border-brass shadow-[inset_4px_0_0_0_var(--color-brass)]'
         : 'text-parchment/70 border-transparent hover:bg-ink/50 hover:text-parchment'
-    } shadow-sm group whitespace-nowrap overflow-hidden`}
+      } shadow-sm group whitespace-nowrap overflow-hidden`}
   >
     <Icon className={`h-5 w-5 shrink-0 ${active ? 'text-brass' : 'text-parchment/50'}`} />
     <span className={`text-sm tracking-wide transition-opacity duration-300 ${active ? 'font-bold' : 'font-semibold'} ${isExpanded ? 'opacity-100' : 'opacity-0 w-0'}`}>{label}</span>
@@ -31,13 +30,13 @@ const AdminLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(true);
-  
+
   // Read profile synchronously from localStorage
   const [profile] = useState<UserProfile | null>(() => {
     const saved = localStorage.getItem('bookhub_profile');
     return saved ? JSON.parse(saved) : null;
   });
-  
+
   const { enqueueSnackbar } = useSnackbar();
 
   const handleLogout = async () => {
@@ -83,9 +82,9 @@ const AdminLayout = () => {
               </div>
             )}
           </Link>
-          <button 
+          <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-2 transition-colors text-brass/40 hover:text-brass bg-parchment/5 rounded-academic"
+            className="p-2 transition-colors text-brass/40 hover:text-brass bg-parchment/5 rounded-academic cursor-pointer"
           >
             {isExpanded ? <ChevronLeft className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </button>
@@ -95,10 +94,10 @@ const AdminLayout = () => {
           {isExpanded && <p className="px-8 text-xs font-black text-parchment/40 tracking-[0.3em] mb-4 uppercase animate-in fade-in duration-300">Main Navigation</p>}
           <div className="space-y-1">
             {menuItems.map((item) => (
-              <SidebarItem 
-                key={item.path} 
-                {...item} 
-                active={location.pathname === item.path} 
+              <SidebarItem
+                key={item.path}
+                {...item}
+                active={location.pathname === item.path}
                 isExpanded={isExpanded}
               />
             ))}
@@ -106,9 +105,9 @@ const AdminLayout = () => {
         </nav>
 
         <div className={`p-4 border-t border-parchment/5 transition-all duration-300 relative z-40 ${isExpanded ? 'p-8' : 'p-4 flex justify-center'}`}>
-          <button 
+          <button
             onClick={handleLogout}
-            className={`flex items-center gap-3 px-4 py-3 text-parchment/60 hover:text-red-400 hover:bg-white/5 rounded-md transition-all duration-300 font-mono text-xs font-black uppercase tracking-widest overflow-hidden group/logout ${isExpanded ? 'w-full' : 'w-auto p-2 justify-center'}`}
+            className={`flex items-center gap-3 px-4 py-3 text-parchment/60 hover:text-red-400 hover:bg-white/5 rounded-md transition-all duration-300 font-mono text-xs font-black uppercase tracking-widest overflow-hidden group/logout cursor-pointer ${isExpanded ? 'w-full' : 'w-auto p-2 justify-center'}`}
             title="Log out from system"
           >
             <LogOut className="h-4 w-4 shrink-0 transition-transform group-hover/logout:-translate-x-1" />
@@ -121,20 +120,20 @@ const AdminLayout = () => {
       <main className="flex-1 flex flex-col overflow-hidden relative">
         {/* Subtle Archival Texture Overlay */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
-        
+
         {/* Header */}
         <header className="h-20 border-b border-oxford-blue/10 flex items-center justify-between px-10 bg-white/80 backdrop-blur-md z-10">
           <div className="flex items-center bg-parchment border border-oxford-blue/10 rounded-academic px-4 py-2 w-96 group focus-within:border-brass/30 transition-all">
             <Search className="h-4 w-4 text-oxford-blue/30 group-focus-within:text-brass" />
-            <input 
-              type="text" 
-              placeholder="Search library..." 
+            <input
+              type="text"
+              placeholder="Search library..."
               className="bg-transparent border-none focus:outline-none text-base text-charcoal px-3 w-full font-serif italic"
             />
           </div>
 
           <div className="flex items-center gap-8">
-            <button className="relative text-oxford-blue/40 hover:text-oxford-blue transition-colors p-2">
+            <button className="relative text-oxford-blue/40 hover:text-oxford-blue transition-colors p-2 cursor-pointer">
               <Bell className="h-5 w-5" />
               <span className="absolute top-2 right-2 h-1.5 w-1.5 bg-brass rounded-full"></span>
             </button>

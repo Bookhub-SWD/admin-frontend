@@ -107,10 +107,10 @@ const Dashboard = () => {
       {/* Primary Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {[
-          { label: 'Total Books', value: summaryData.total_books.toLocaleString(), icon: Library, color: 'text-oxford-blue', subtitle: 'Books in Collection' },
-          { label: 'Borrowed Books', value: summaryData.currently_borrowed.toLocaleString(), icon: GraduationCap, color: 'text-oxford-blue', subtitle: 'Active Loans' },
-          { label: 'Overdue Items', value: summaryData.overdue_items.toLocaleString(), icon: Archive, color: 'text-brass', subtitle: 'Items to Return' },
-          { label: 'Unpaid Fines', value: summaryData.unpaid_fines.toLocaleString(), icon: Award, color: 'text-red-500', subtitle: 'Pending Fines' },
+          { label: 'Total Books', value: (summaryData.total_books || 0).toLocaleString(), icon: Library, color: 'text-oxford-blue', subtitle: 'Books in Collection' },
+          { label: 'Borrowed Books', value: (summaryData.currently_borrowed || 0).toLocaleString(), icon: GraduationCap, color: 'text-oxford-blue', subtitle: 'Active Loans' },
+          { label: 'Overdue Items', value: (summaryData.overdue_items || 0).toLocaleString(), icon: Archive, color: 'text-brass', subtitle: 'Items to Return' },
+          { label: 'Unpaid Fines', value: (summaryData.unpaid_fines || 0).toLocaleString(), icon: Award, color: 'text-red-500', subtitle: 'Pending Fines' },
         ].map((stat, i) => (
           <div key={i} className="card-academic p-6 border-t-4 border-t-oxford-blue group hover:border-t-brass transition-all duration-500">
             <div className="flex items-center justify-between mb-4">
@@ -221,7 +221,7 @@ const Dashboard = () => {
             </ResponsiveContainer>
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="text-center">
-                <div className="text-2xl font-serif font-black text-oxford-blue">{loading ? '...' : summaryData.total_books.toLocaleString()}</div>
+                <div className="text-2xl font-serif font-black text-oxford-blue">{loading ? '...' : (summaryData.total_books || 0).toLocaleString()}</div>
                 <div className="text-[11px] font-mono font-black text-charcoal/50 uppercase tracking-[0.2em]">Total Books</div>
               </div>
             </div>
