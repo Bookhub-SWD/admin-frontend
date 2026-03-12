@@ -8,6 +8,8 @@ import Books from './pages/Books';
 import Users from './pages/Users';
 import Reports from './pages/Reports';
 import Settings from './pages/Settings';
+import Borrows from './pages/Borrows';
+import Fines from './pages/Fines';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -27,6 +29,8 @@ function App() {
               <Route index element={<Dashboard />} />
               <Route path="events" element={<Events />} />
               <Route path="books" element={<Books />} />
+              <Route path="borrows" element={<Borrows />} />
+              <Route path="fines" element={<Fines />} />
               <Route path="users" element={<Users />} />
               <Route path="reports" element={<Reports />} />
               <Route path="settings" element={<Settings />} />

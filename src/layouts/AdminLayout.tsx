@@ -2,7 +2,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, BookOpen, Users, FileBarChart, 
   Settings, LogOut, Bell, Search, Library, Calendar,
-  ChevronLeft, Menu
+  ChevronLeft, Menu, Archive, Award
 } from 'lucide-react';
 import { useState } from 'react';
 import { signOut, type UserProfile } from '../services/auth';
@@ -62,6 +62,8 @@ const AdminLayout = () => {
     { icon: LayoutDashboard, label: 'DASHBOARD', path: '/' },
     { icon: Calendar, label: 'EVENTS HUB', path: '/events' },
     { icon: BookOpen, label: 'LIBRARY MANAGEMENT', path: '/books' },
+    { icon: Archive, label: 'BORROW RECORDS', path: '/borrows' },
+    { icon: Award, label: 'FINES & PAYMENTS', path: '/fines' },
     { icon: Users, label: 'USER MANAGEMENT', path: '/users' },
     { icon: FileBarChart, label: 'REPORTS & ANALYTICS', path: '/reports' },
     { icon: Settings, label: 'SYSTEM SETTINGS', path: '/settings' },

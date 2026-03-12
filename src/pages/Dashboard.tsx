@@ -6,7 +6,7 @@ import {
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 
-
+import { Link } from 'react-router-dom';
 
 const SCHOLARLY_COLORS = ['#002147', '#B5A642', '#1A1A1A', '#4A5568', '#2D4A22', '#6B2D5C', '#326685'];
 
@@ -107,12 +107,12 @@ const Dashboard = () => {
       {/* Primary Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {[
-          { label: 'Total Books', value: summaryData.total_books.toLocaleString(), icon: Library, color: 'text-oxford-blue', subtitle: 'Books in Collection' },
-          { label: 'Borrowed Books', value: summaryData.currently_borrowed.toLocaleString(), icon: GraduationCap, color: 'text-oxford-blue', subtitle: 'Active Loans' },
-          { label: 'Overdue Items', value: summaryData.overdue_items.toLocaleString(), icon: Archive, color: 'text-brass', subtitle: 'Items to Return' },
-          { label: 'Unpaid Fines', value: summaryData.unpaid_fines.toLocaleString(), icon: Award, color: 'text-red-500', subtitle: 'Pending Fines' },
+          { label: 'Total Books', value: summaryData.total_books.toLocaleString(), icon: Library, color: 'text-oxford-blue', subtitle: 'Books in Collection', link: '/books' },
+          { label: 'Borrowed Books', value: summaryData.currently_borrowed.toLocaleString(), icon: GraduationCap, color: 'text-oxford-blue', subtitle: 'Active Loans', link: '/borrows?status=borrowed' },
+          { label: 'Overdue Items', value: summaryData.overdue_items.toLocaleString(), icon: Archive, color: 'text-brass', subtitle: 'Items to Return', link: '/borrows?status=overdue' },
+          { label: 'Unpaid Fines', value: summaryData.unpaid_fines.toLocaleString(), icon: Award, color: 'text-red-500', subtitle: 'Pending Fines', link: '/fines?status=pending' },
         ].map((stat, i) => (
-          <div key={i} className="card-academic p-6 border-t-4 border-t-oxford-blue group hover:border-t-brass transition-all duration-500">
+          <Link key={i} to={stat.link} className="card-academic p-6 border-t-4 border-t-oxford-blue group hover:border-t-brass transition-all duration-500 block decoration-transparent outline-none">
             <div className="flex items-center justify-between mb-4">
                <div className="bg-parchment p-3 rounded-academic border border-oxford-blue/5 group-hover:scale-110 transition-transform">
                 <stat.icon className={`h-6 w-6 ${stat.color}`} />
@@ -121,7 +121,7 @@ const Dashboard = () => {
             </div>
             <div className="text-4xl font-serif font-black text-oxford-blue mb-1">{loading ? '...' : stat.value}</div>
             <div className="text-xs font-sans font-bold text-charcoal/70 uppercase tracking-widest">{stat.subtitle}</div>
-          </div>
+          </Link>
         ))}
       </div>
 
@@ -136,10 +136,6 @@ const Dashboard = () => {
               </h3>
               <p className="text-xs text-charcoal/60 font-medium tracking-tight">Weekly book loan distribution.</p>
             </div>
-            <select className="bg-parchment border-none text-xs font-mono font-black uppercase tracking-widest focus:ring-0 cursor-pointer">
-              <option>Last 7 Days</option>
-              <option>This Month</option>
-            </select>
           </div>
           
           <div className="h-80 w-full relative">
