@@ -3,6 +3,9 @@ import { UserPlus, Search, GraduationCap, ShieldCheck, Mail, MoreVertical, Badge
 import api from '../services/api';
 import { useSnackbar } from 'notistack';
 import EditUserModal from '../components/EditUserModal';
+import AddUserModal from '../components/AddUserModal';
+import UserDetailModal from '../components/UserDetailModal';
+import { Eye } from 'lucide-react';
 
 
 interface User {
@@ -24,6 +27,8 @@ const Users = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [pagination, setPagination] = useState({
 
@@ -94,7 +99,10 @@ const Users = () => {
           <h1 className="text-4xl font-serif font-black text-oxford-blue mb-2 tracking-tight uppercase">User Management</h1>
           <p className="text-charcoal/70 font-sans font-medium italic">Management of library users, roles, and access levels.</p>
         </div>
-        <button className="btn-academic flex items-center gap-2 text-xs cursor-pointer">
+        <button 
+          onClick={() => setIsAddModalOpen(true)}
+          className="btn-academic flex items-center gap-2 text-xs cursor-pointer"
+        >
           <UserPlus className="h-4 w-4" />
           Add New User
         </button>
@@ -183,6 +191,16 @@ const Users = () => {
                         </td>
                         <td className="px-8 py-6 text-right">
                            <div className="flex justify-end gap-2">
+                             <button 
+                               onClick={() => {
+                                 setSelectedUser(user);
+                                 setIsDetailModalOpen(true);
+                               }}
+                               className="p-2 text-oxford-blue/20 hover:text-brass transition-colors border border-transparent hover:border-brass/20 rounded-academic cursor-pointer"
+                               title="View Detailed Records"
+                             >
+                                <Eye className="h-4 w-4" />
+                             </button>
                              <button 
                                onClick={() => {
                                  setSelectedUser(user);
@@ -278,10 +296,22 @@ const Users = () => {
          </div>
       </div>
 
+      <AddUserModal 
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSuccess={() => fetchUsers(1, search)}
+      />
+
       <EditUserModal 
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         onSuccess={() => fetchUsers(pagination.current_page, search)}
+        user={selectedUser}
+      />
+
+      <UserDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
         user={selectedUser}
       />
     </div>

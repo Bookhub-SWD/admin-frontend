@@ -8,6 +8,7 @@ import Books from './pages/Books';
 import Users from './pages/Users';
 import Reports from './pages/Reports';
 import Settings from './pages/Settings';
+import Circulation from './pages/Circulation';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
               <Route path="events" element={<Events />} />
               <Route path="books" element={<Books />} />
               <Route path="users" element={<Users />} />
+              <Route path="circulation" element={<Circulation />} />
               <Route path="reports" element={<Reports />} />
               <Route path="settings" element={<Settings />} />
             </Route>

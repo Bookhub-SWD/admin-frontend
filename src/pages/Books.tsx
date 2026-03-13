@@ -111,11 +111,7 @@ const Books = () => {
           <div className="flex gap-8">
             <div className="flex items-center gap-2 group cursor-pointer">
               <BookMarked className="h-4 w-4 text-brass" />
-              <span className="text-xs font-mono font-black text-oxford-blue uppercase tracking-widest border-b border-brass/50">Total Books: {totalItems.toLocaleString()}</span>
-            </div>
-            <div className="flex items-center gap-2 group cursor-pointer">
-              <Layers className="h-4 w-4 text-oxford-blue/40" />
-              <span className="text-xs font-mono font-black text-charcoal/70 uppercase tracking-widest">In Stock: 11,201</span>
+              <span className="text-xs font-mono font-black text-oxford-blue uppercase tracking-widest border-b border-brass/50">Volumes Cataloged: {totalItems.toLocaleString()}</span>
             </div>
           </div>
           <div className="flex gap-4">
