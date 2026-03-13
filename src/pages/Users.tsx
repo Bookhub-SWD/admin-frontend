@@ -62,6 +62,17 @@ const Users = () => {
     return () => clearTimeout(timer);
   }, [search, fetchUsers]);
 
+  const getRoleStyles = (roleName?: string) => {
+    switch (roleName?.toUpperCase()) {
+      case 'ADMIN':
+        return 'bg-red-50 text-red-700 border border-red-100';
+      case 'LIBRARIAN':
+        return 'bg-brass/10 text-brass border border-brass/20';
+      default:
+        return 'bg-oxford-blue/5 text-oxford-blue/60 border border-oxford-blue/10';
+    }
+  };
+
   const toggleStatus = async (user: User) => {
     const newStatus = user.status === 'active' ? 'inactive' : 'active';
     try {
@@ -153,7 +164,9 @@ const Users = () => {
                         </td>
                         <td className="px-8 py-6 border-r border-oxford-blue/5">
                           <div className="flex flex-col">
-                            <span className="text-[10px] font-mono font-black text-oxford-blue uppercase tracking-widest bg-oxford-blue/5 px-2 py-0.5 rounded-sm inline-block w-fit">{user.roles?.name || 'User'}</span>
+                            <span className={`text-[10px] font-mono font-black uppercase tracking-widest px-2 py-0.5 rounded-sm inline-block w-fit ${getRoleStyles(user.roles?.name)}`}>
+                              {user.roles?.name || 'User'}
+                            </span>
                             <span className="text-[9px] font-mono font-black text-charcoal/40 uppercase tracking-[0.2em] mt-1 shrink-0">UID: {user.id.substring(0, 8)}...</span>
                           </div>
                         </td>

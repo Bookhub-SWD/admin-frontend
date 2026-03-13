@@ -25,13 +25,36 @@ const Books = () => {
   const [isCopiesModalOpen, setIsCopiesModalOpen] = useState(false);
   const [selectedBook, setSelectedBook] = useState<{id: string, title: string} | null>(null);
   const [totalItems, setTotalItems] = useState(0);
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState('');
+  const [subject, setSubject] = useState('');
+  const [categories, setCategories] = useState<string[]>([]);
+  const [subjects, setSubjects] = useState<{id: number, name: string}[]>([]);
 
+  const fetchFilters = async () => {
+    try {
+      const [catRes, subRes] = await Promise.all([
+        api.get('/subjects/categories'),
+        api.get('/subjects')
+      ]);
+      if (catRes.data.ok) setCategories(catRes.data.data);
+      if (subRes.data.ok) setSubjects(subRes.data.data);
+    } catch (err) {
+      console.error('Books: Error fetching filters', err);
+    }
+  };
 
-
-  const fetchData = async () => {
+  const fetchData = async (query = '', cat = '', sub = '') => {
     setLoading(true);
     try {
-      const res = await api.get('/books', { params: { limit: 10 } });
+      const res = await api.get('/books', { 
+        params: { 
+          limit: 10,
+          search: query,
+          category: cat,
+          subject_id: sub
+        } 
+      });
       if (res.data.ok) {
         setBooks(res.data.data);
         setTotalItems(res.data.pagination.total_items);
@@ -44,8 +67,16 @@ const Books = () => {
   };
 
   useEffect(() => {
+    fetchFilters();
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+        fetchData(search, category, subject);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [search, category, subject]);
 
   return (
     <div className="p-10 space-y-10 animate-in fade-in duration-500">
@@ -92,11 +123,44 @@ const Books = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-oxford-blue/30" />
               <input 
                 type="text" 
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search by ISBN or Title..." 
                 className="bg-white border border-oxford-blue/20 rounded-academic pl-10 pr-4 py-2 text-xs text-charcoal focus:outline-none focus:border-brass/30 w-64 uppercase font-mono font-black tracking-widest"
               />
             </div>
-            <button className="p-2 border border-oxford-blue/10 rounded-academic text-oxford-blue/40 hover:text-brass transition-colors cursor-pointer">
+            
+            <select 
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="bg-white border border-oxford-blue/20 rounded-academic px-4 py-2 text-xs text-charcoal focus:outline-none focus:border-brass/30 font-mono font-black uppercase tracking-widest cursor-pointer appearance-none min-w-[150px]"
+            >
+                <option value="">All Categories</option>
+                {categories.map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                ))}
+            </select>
+
+            <select 
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                className="bg-white border border-oxford-blue/20 rounded-academic px-4 py-2 text-xs text-charcoal focus:outline-none focus:border-brass/30 font-mono font-black uppercase tracking-widest cursor-pointer appearance-none min-w-[150px]"
+            >
+                <option value="">All Subjects</option>
+                {subjects.map(sub => (
+                    <option key={sub.id} value={sub.id}>{sub.name}</option>
+                ))}
+            </select>
+
+            <button 
+                onClick={() => {
+                    setSearch('');
+                    setCategory('');
+                    setSubject('');
+                }}
+                className="p-2 border border-oxford-blue/10 rounded-academic text-oxford-blue/40 hover:text-brass transition-colors cursor-pointer"
+                title="Clear Filters"
+            >
               <Filter className="h-4 w-4" />
             </button>
           </div>

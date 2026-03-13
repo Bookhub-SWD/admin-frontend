@@ -1,16 +1,45 @@
-import { Download, FileText, TrendingUp, BookOpen, Clock, BarChart as BarIcon } from 'lucide-react';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-
-const circulationData = [
-  { month: 'Jan', physical: 450, digital: 300 },
-  { month: 'Feb', physical: 520, digital: 380 },
-  { month: 'Mar', physical: 480, digital: 420 },
-  { month: 'Apr', physical: 610, digital: 540 },
-  { month: 'May', physical: 550, digital: 590 },
-  { month: 'Jun', physical: 670, digital: 620 },
-];
+import { useState, useEffect } from 'react';
+import { Download, FileText, TrendingUp, BookOpen, Clock, BarChart as BarIcon, Loader2 } from 'lucide-react';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line } from 'recharts';
+import api from '../services/api';
 
 const Reports = () => {
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<{
+    trends: {
+      borrowing: { month: string, count: number }[],
+      revenue: { month: string, amount: number }[]
+    },
+    summary: {
+      total_books: number,
+      active_users: number,
+      revenue: number,
+      currently_borrowed: number
+    }
+  }>({
+    trends: { borrowing: [], revenue: [] },
+    summary: { total_books: 0, active_users: 0, revenue: 0, currently_borrowed: 0 }
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await api.get('/stats/dashboard');
+        if (res.data.ok) {
+          setData({
+            trends: res.data.data.trends,
+            summary: res.data.data.summary
+          });
+        }
+      } catch (err) {
+        console.error('Reports: Error fetching stats', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
   return (
     <div className="p-10 space-y-10 animate-in fade-in duration-500">
       {/* Header */}
@@ -19,7 +48,7 @@ const Reports = () => {
           <h1 className="text-4xl font-serif font-black text-oxford-blue mb-2 tracking-tight uppercase">Reports & Analytics</h1>
           <p className="text-charcoal/70 font-sans font-medium italic">View detailed reports on book circulation, user activity, and library health.</p>
         </div>
-        <button className="btn-academic flex items-center gap-2 text-xs">
+        <button className="btn-academic flex items-center gap-2 text-xs shadow-lg shadow-oxford-blue/10 cursor-pointer">
           <Download className="h-4 w-4" />
           Export Report (PDF)
         </button>
@@ -28,64 +57,117 @@ const Reports = () => {
       {/* Analytical Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         {[
-          { label: 'Circulation Growth', value: '+12.4%', icon: TrendingUp, color: 'text-brass' },
-          { label: 'Avg Borrowing Time', value: '14 Days', icon: Clock, color: 'text-oxford-blue' },
-          { label: 'Top Category', value: 'CS Research', icon: BookOpen, color: 'text-oxford-blue' },
-          { label: 'System Accuracy', value: '99.2%', icon: FileText, color: 'text-brass' },
+          { label: 'Cumulative Revenue', value: `$${(data.summary.revenue || 0).toLocaleString()}`, icon: TrendingUp, color: 'text-brass' },
+          { label: 'Active Scholars', value: data.summary.active_users.toLocaleString(), icon: Clock, color: 'text-oxford-blue' },
+          { label: 'Circulation Volume', value: data.summary.currently_borrowed.toLocaleString(), icon: BookOpen, color: 'text-oxford-blue' },
+          { label: 'Inventory Integrity', value: '100%', icon: FileText, color: 'text-brass' },
         ].map((stat, i) => (
-          <div key={i} className="card-academic p-6 border-l-4 border-l-oxford-blue">
+          <div key={i} className="card-academic p-6 border-l-4 border-l-oxford-blue bg-white shadow-sm hover:shadow-md transition-shadow">
             <div className="flex items-center gap-4 mb-4">
               <stat.icon className={`h-5 w-5 ${stat.color}`} />
-              <span className="text-xs font-mono font-black text-charcoal/60 uppercase tracking-widest">{stat.label}</span>
+              <span className="text-[10px] font-mono font-black text-charcoal/60 uppercase tracking-widest">{stat.label}</span>
             </div>
-            <div className="text-3xl font-serif font-black text-oxford-blue">{stat.value}</div>
+            <div className="text-3xl font-serif font-black text-oxford-blue">{loading ? '...' : stat.value}</div>
           </div>
         ))}
       </div>
 
-      {/* Circulation Trends Chart */}
-      <div className="card-academic p-8">
-        <h3 className="text-xl font-serif font-bold text-oxford-blue mb-8 flex items-center gap-2">
-          <BarIcon className="h-5 w-5 text-brass" />
-          Physical vs Digital Circulation
-        </h3>
-        <div className="h-96 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={circulationData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#00000005" vertical={false} />
-              <XAxis 
-                dataKey="month" 
-                stroke="#002147" 
-                fontSize={11} 
-                fontFamily="mono"
-                fontWeight="900"
-                axisLine={false}
-                tickLine={false}
-                dy={10}
-              />
-              <YAxis 
-                stroke="#002147" 
-                fontSize={11} 
-                fontFamily="mono"
-                fontWeight="900"
-                axisLine={false}
-                tickLine={false}
-                dx={-10}
-              />
-              <Tooltip 
-                contentStyle={{ backgroundColor: '#FCFBF7', border: '1px solid #00214710', borderRadius: '2px' }}
-                labelStyle={{ fontFamily: 'serif', fontWeight: 'bold', color: '#002147' }}
-              />
-              <Legend verticalAlign="top" align="right" iconType="rect" wrapperStyle={{ paddingBottom: '30px', fontSize: '11px', fontFamily: 'mono', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.1em' }} />
-              <Bar dataKey="physical" fill="#002147" name="Physical Books" radius={[2, 2, 0, 0]} />
-              <Bar dataKey="digital" fill="#B5A642" name="Digital Copies" radius={[2, 2, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        {/* Circulation Trends Chart */}
+        <div className="card-academic p-8 bg-white">
+            <h3 className="text-xl font-serif font-bold text-oxford-blue mb-8 flex items-center gap-2">
+            <BarIcon className="h-5 w-5 text-brass" />
+            Monthly Borrowing Trends
+            </h3>
+            <div className="h-80 w-full">
+            {loading ? (
+                <div className="h-full flex flex-col items-center justify-center gap-4">
+                    <Loader2 className="h-8 w-8 text-oxford-blue animate-spin" />
+                    <span className="text-[10px] font-mono font-black text-oxford-blue/40 uppercase tracking-widest">Compiling Data...</span>
+                </div>
+            ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={data.trends.borrowing}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#00000005" vertical={false} />
+                    <XAxis 
+                        dataKey="month" 
+                        stroke="#002147" 
+                        fontSize={10} 
+                        fontFamily="mono"
+                        fontWeight="900"
+                        axisLine={false}
+                        tickLine={false}
+                        dy={10}
+                    />
+                    <YAxis 
+                        stroke="#002147" 
+                        fontSize={10} 
+                        fontFamily="mono"
+                        fontWeight="900"
+                        axisLine={false}
+                        tickLine={false}
+                        dx={-10}
+                    />
+                    <Tooltip 
+                        contentStyle={{ backgroundColor: '#FCFBF7', border: '1px solid #00214710', borderRadius: '2px' }}
+                        labelStyle={{ fontFamily: 'serif', fontWeight: 'bold', color: '#002147' }}
+                    />
+                    <Bar dataKey="count" fill="#002147" name="Volumes Loaned" radius={[2, 2, 0, 0]} />
+                    </BarChart>
+                </ResponsiveContainer>
+            )}
+            </div>
+        </div>
+
+        {/* Revenue Trends Chart */}
+        <div className="card-academic p-8 bg-white">
+            <h3 className="text-xl font-serif font-bold text-oxford-blue mb-8 flex items-center gap-2">
+            <TrendingUp className="h-5 w-5 text-brass" />
+            Revenue Accumulation
+            </h3>
+            <div className="h-80 w-full">
+            {loading ? (
+                 <div className="h-full flex flex-col items-center justify-center gap-4">
+                    <Loader2 className="h-8 w-8 text-oxford-blue animate-spin" />
+                    <span className="text-[10px] font-mono font-black text-oxford-blue/40 uppercase tracking-widest">Calculating Revenue...</span>
+                </div>
+            ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={data.trends.revenue}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#00000005" vertical={false} />
+                    <XAxis 
+                        dataKey="month" 
+                        stroke="#002147" 
+                        fontSize={10} 
+                        fontFamily="mono"
+                        fontWeight="900"
+                        axisLine={false}
+                        tickLine={false}
+                        dy={10}
+                    />
+                    <YAxis 
+                        stroke="#002147" 
+                        fontSize={10} 
+                        fontFamily="mono"
+                        fontWeight="900"
+                        axisLine={false}
+                        tickLine={false}
+                        dx={-10}
+                    />
+                    <Tooltip 
+                        contentStyle={{ backgroundColor: '#FCFBF7', border: '1px solid #00214710', borderRadius: '2px' }}
+                        labelStyle={{ fontFamily: 'serif', fontWeight: 'bold', color: '#002147' }}
+                    />
+                    <Line type="monotone" dataKey="amount" stroke="#B5A642" strokeWidth={3} dot={{ r: 4, fill: '#002147' }} name="Scholarly Revenue ($)" />
+                    </LineChart>
+                </ResponsiveContainer>
+            )}
+            </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-         <div className="card-academic p-8">
+         <div className="card-academic p-8 bg-white">
             <h2 className="text-xl font-serif font-black text-oxford-blue mb-6 uppercase tracking-tight">Exported Reports</h2>
             <div className="space-y-4">
                {[
@@ -100,7 +182,7 @@ const Reports = () => {
                       </div>
                       <div>
                         <div className="text-sm font-black text-oxford-blue">{doc.title}</div>
-                        <div className="text-xs font-mono font-black text-charcoal/50 flex gap-4 uppercase tracking-widest mt-1">
+                        <div className="text-[10px] font-mono font-black text-charcoal/50 flex gap-4 uppercase tracking-widest mt-1">
                           <span>Verified: {doc.date}</span>
                           <span>{doc.size}</span>
                         </div>
@@ -112,8 +194,8 @@ const Reports = () => {
             </div>
          </div>
 
-         <div className="card-academic p-8">
-            <h2 className="text-xl font-serif font-black text-oxford-blue mb-6 uppercase tracking-tight">Activity Log</h2>
+         <div className="card-academic p-8 bg-white">
+            <h2 className="text-xl font-serif font-black text-oxford-blue mb-6 uppercase tracking-tight">System Events Log</h2>
             <div className="space-y-6">
                {[
                  { event: 'Database Synchronization Finished', time: '10:45 AM', type: 'System' },
@@ -128,8 +210,8 @@ const Reports = () => {
                    <div>
                      <div className="text-xs font-black text-oxford-blue">{log.event}</div>
                      <div className="flex gap-4 mt-1">
-                       <span className="text-xs font-mono font-black text-charcoal/50 uppercase tracking-widest">{log.time}</span>
-                       <span className="text-xs font-mono font-black text-brass uppercase tracking-widest">{log.type}</span>
+                       <span className="text-[10px] font-mono font-black text-charcoal/50 uppercase tracking-widest">{log.time}</span>
+                       <span className="text-[10px] font-mono font-black text-brass uppercase tracking-widest">{log.type}</span>
                      </div>
                    </div>
                  </div>

@@ -1,4 +1,4 @@
-import { TrendingUp, GraduationCap, Archive, Award, Newspaper, Library, Loader2 } from 'lucide-react';
+import { TrendingUp, GraduationCap, Archive, Newspaper, Library, Loader2 } from 'lucide-react';
 import { 
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   PieChart, Pie, Cell, AreaChart, Area
@@ -17,8 +17,11 @@ const Dashboard = () => {
     total_books: 0,
     currently_borrowed: 0,
     overdue_items: 0,
-    unpaid_fines: 0
+    unpaid_fines: 0,
+    active_users: 0,
+    borrowed_today: 0
   });
+  const [recentActivity, setRecentActivity] = useState<{id: string, user: {name: string}, book: string, action: string, date: string, status: string}[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -68,6 +71,9 @@ const Dashboard = () => {
           if (statsRes.data.data.book_categories) {
             setCategoryData(statsRes.data.data.book_categories);
           }
+          if (statsRes.data.data.recent_activity) {
+            setRecentActivity(statsRes.data.data.recent_activity);
+          }
         }
         
         // If we didn't get OK from both (perhaps auth was still linking), 
@@ -108,19 +114,19 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {[
           { label: 'Total Books', value: (summaryData.total_books || 0).toLocaleString(), icon: Library, color: 'text-oxford-blue', subtitle: 'Books in Collection' },
-          { label: 'Borrowed Books', value: (summaryData.currently_borrowed || 0).toLocaleString(), icon: GraduationCap, color: 'text-oxford-blue', subtitle: 'Active Loans' },
-          { label: 'Overdue Items', value: (summaryData.overdue_items || 0).toLocaleString(), icon: Archive, color: 'text-brass', subtitle: 'Items to Return' },
-          { label: 'Unpaid Fines', value: (summaryData.unpaid_fines || 0).toLocaleString(), icon: Award, color: 'text-red-500', subtitle: 'Pending Fines' },
+          { label: 'Active Scholars', value: (summaryData.active_users || 0).toLocaleString(), icon: GraduationCap, color: 'text-oxford-blue', subtitle: 'Verified Members' },
+          { label: 'Borrowed Today', value: (summaryData.borrowed_today || 0).toLocaleString(), icon: Newspaper, color: 'text-brass', subtitle: 'Daily Circulation' },
+          { label: 'Borrowed Books', value: (summaryData.currently_borrowed || 0).toLocaleString(), icon: Archive, color: 'text-oxford-blue', subtitle: 'Active Loans' },
         ].map((stat, i) => (
-          <div key={i} className="card-academic p-6 border-t-4 border-t-oxford-blue group hover:border-t-brass transition-all duration-500">
+          <div key={i} className="card-academic p-6 border-t-4 border-t-oxford-blue group hover:border-t-brass transition-all duration-500 bg-white">
             <div className="flex items-center justify-between mb-4">
                <div className="bg-parchment p-3 rounded-academic border border-oxford-blue/5 group-hover:scale-110 transition-transform">
                 <stat.icon className={`h-6 w-6 ${stat.color}`} />
                </div>
-               <span className="text-xs font-mono font-black text-charcoal/50 uppercase tracking-[0.2em]">{stat.label}</span>
+               <span className="text-[10px] font-mono font-black text-charcoal/50 uppercase tracking-[0.2em]">{stat.label}</span>
             </div>
             <div className="text-4xl font-serif font-black text-oxford-blue mb-1">{loading ? '...' : stat.value}</div>
-            <div className="text-xs font-sans font-bold text-charcoal/70 uppercase tracking-widest">{stat.subtitle}</div>
+            <div className="text-[10px] font-sans font-bold text-charcoal/70 uppercase tracking-widest">{stat.subtitle}</div>
           </div>
         ))}
       </div>
@@ -241,6 +247,65 @@ const Dashboard = () => {
                 <div className="text-center text-xs text-charcoal/50 italic py-4">No categories found.</div>
              )}
           </div>
+        </div>
+      </div>
+
+      {/* Recent Activity Section */}
+      <div className="card-academic p-8 bg-white">
+        <h3 className="text-xl font-serif font-bold text-oxford-blue mb-8 uppercase tracking-tight flex items-center gap-2">
+            <Archive className="h-5 w-5 text-brass" />
+            Registry Activity Log
+        </h3>
+        <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+                <thead>
+                    <tr className="bg-oxford-blue text-parchment uppercase font-mono text-[10px] font-black tracking-[0.2em]">
+                        <th className="px-6 py-4 border-r border-parchment/10">Member</th>
+                        <th className="px-6 py-4 border-r border-parchment/10">Action</th>
+                        <th className="px-6 py-4 border-r border-parchment/10">Archival Item</th>
+                        <th className="px-6 py-4 border-r border-parchment/10 font-black">Timestamp</th>
+                        <th className="px-6 py-4 text-right">Status</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-oxford-blue/5">
+                    {loading ? (
+                        <tr><td colSpan={5} className="p-10 text-center animate-pulse font-mono text-xs uppercase tracking-widest text-oxford-blue/40">Accessing archives...</td></tr>
+                    ) : recentActivity.length === 0 ? (
+                        <tr><td colSpan={5} className="p-10 text-center font-serif italic text-charcoal/30">No recent transactions recorded.</td></tr>
+                    ) : (
+                        recentActivity.map((act) => (
+                            <tr key={act.id} className="hover:bg-parchment/30 transition-colors">
+                                <td className="px-6 py-4 border-r border-oxford-blue/5">
+                                    <div className="text-sm font-serif font-black text-oxford-blue">{act.user.name}</div>
+                                </td>
+                                <td className="px-6 py-4 border-r border-oxford-blue/5">
+                                    <span className={`text-[10px] font-mono font-black uppercase tracking-widest px-2 py-0.5 rounded-sm ${
+                                        act.action === 'Return' ? 'bg-green-100 text-green-700' : 
+                                        act.action === 'Borrow' ? 'bg-blue-100 text-blue-700' : 
+                                        'bg-brass/10 text-brass'
+                                    }`}>
+                                        {act.action}
+                                    </span>
+                                </td>
+                                <td className="px-6 py-4 border-r border-oxford-blue/5">
+                                    <div className="text-xs font-sans font-bold text-oxford-blue/80 italic line-clamp-1">{act.book}</div>
+                                </td>
+                                <td className="px-6 py-4 border-r border-oxford-blue/5">
+                                    <div className="text-[10px] font-mono font-black text-charcoal/60 uppercase">{act.date}</div>
+                                </td>
+                                <td className="px-6 py-4 text-right">
+                                    <span className={`text-[10px] font-mono font-black uppercase tracking-widest ${
+                                        act.status === 'Completed' ? 'text-green-600' : 
+                                        act.status === 'Active' ? 'text-blue-600' : 'text-brass'
+                                    }`}>
+                                        {act.status}
+                                    </span>
+                                </td>
+                            </tr>
+                        ))
+                    )}
+                </tbody>
+            </table>
         </div>
       </div>
     </div>
