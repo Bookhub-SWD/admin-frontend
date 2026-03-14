@@ -39,7 +39,6 @@ const UserDetailModal = ({ isOpen, onClose, user }: UserDetailModalProps) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-oxford-blue/40 backdrop-blur-sm animate-in fade-in duration-300">
       <div className="bg-parchment w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-academic shadow-2xl flex flex-col border border-oxford-blue/10 relative">
-        <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
         
         {/* Header */}
         <div className="p-8 border-b border-oxford-blue/10 bg-white/50 flex justify-between items-start relative z-10">
@@ -48,7 +47,7 @@ const UserDetailModal = ({ isOpen, onClose, user }: UserDetailModalProps) => {
               {user.full_name?.[0] || user.email[0]}
             </div>
             <div>
-              <h2 className="text-3xl font-serif font-black text-oxford-blue tracking-tight uppercase">{user.full_name || 'Anonymous Scholar'}</h2>
+              <h2 className="text-3xl font-serif font-black text-oxford-blue tracking-tight uppercase">{user.full_name || 'Unknown User'}</h2>
               <div className="flex gap-4 mt-2">
                 <span className="text-[10px] font-mono font-black text-brass uppercase tracking-[0.2em] bg-brass/10 px-2 py-0.5 rounded border border-brass/20">
                   {user.roles?.name || 'Member'}
@@ -73,21 +72,21 @@ const UserDetailModal = ({ isOpen, onClose, user }: UserDetailModalProps) => {
             <div className="card-academic p-5 bg-white border-l-4 border-l-oxford-blue shadow-sm">
                 <div className="flex items-center gap-2 mb-2">
                     <Mail className="h-4 w-4 text-oxford-blue/40" />
-                    <span className="text-[10px] font-mono font-black text-charcoal/40 uppercase tracking-widest">Digital Registry</span>
+                    <span className="text-[10px] font-mono font-black text-charcoal/40 uppercase tracking-widest">Email Address</span>
                 </div>
                 <div className="text-sm font-black text-oxford-blue truncate" title={user.email}>{user.email}</div>
             </div>
             <div className="card-academic p-5 bg-white border-l-4 border-l-brass shadow-sm">
                 <div className="flex items-center gap-2 mb-2">
                     <Phone className="h-4 w-4 text-brass/40" />
-                    <span className="text-[10px] font-mono font-black text-charcoal/40 uppercase tracking-widest">Liaison Line</span>
+                    <span className="text-[10px] font-mono font-black text-charcoal/40 uppercase tracking-widest">Phone Number</span>
                 </div>
-                <div className="text-sm font-black text-oxford-blue">{user.phone || 'No line on file'}</div>
+                <div className="text-sm font-black text-oxford-blue">{user.phone || 'No phone on file'}</div>
             </div>
             <div className="card-academic p-5 bg-white border-l-4 border-l-oxford-blue/20 shadow-sm">
                 <div className="flex items-center gap-2 mb-2">
                     <Shield className="h-4 w-4 text-oxford-blue/20" />
-                    <span className="text-[10px] font-mono font-black text-charcoal/40 uppercase tracking-widest">Authority ID</span>
+                    <span className="text-[10px] font-mono font-black text-charcoal/40 uppercase tracking-widest">Identity Code</span>
                 </div>
                 <div className="text-sm font-black text-oxford-blue uppercase tracking-widest font-mono">{user.identity_code || 'Unassigned'}</div>
             </div>
@@ -98,7 +97,7 @@ const UserDetailModal = ({ isOpen, onClose, user }: UserDetailModalProps) => {
             <section className="space-y-4">
               <h3 className="text-lg font-serif font-black text-oxford-blue flex items-center gap-2 uppercase tracking-tight">
                 <BookOpen className="h-5 w-5 text-brass" />
-                Scholarly Loans History
+                Borrowing History
               </h3>
               <div className="space-y-3">
                 {loading ? (
@@ -140,7 +139,7 @@ const UserDetailModal = ({ isOpen, onClose, user }: UserDetailModalProps) => {
             <section className="space-y-4">
               <h3 className="text-lg font-serif font-black text-oxford-blue flex items-center gap-2 uppercase tracking-tight">
                 <RotateCcw className="h-5 w-5 text-red-500/50" />
-                Administrative Fines
+                Fines & Overdues
               </h3>
               <div className="space-y-3">
                 {loading ? (
@@ -148,7 +147,7 @@ const UserDetailModal = ({ isOpen, onClose, user }: UserDetailModalProps) => {
                      <div key={i} className="h-20 bg-white/50 rounded-academic animate-pulse border border-oxford-blue/5"></div>
                    ))
                 ) : fines.length === 0 ? (
-                  <div className="p-8 text-center bg-white/30 rounded-academic border border-dashed border-oxford-blue/10 italic text-xs font-mono font-black text-charcoal/40 uppercase tracking-widest">Subject carries no debt.</div>
+                  <div className="p-8 text-center bg-white/30 rounded-academic border border-dashed border-oxford-blue/10 italic text-xs font-mono font-black text-charcoal/40 uppercase tracking-widest">User has no fines.</div>
                 ) : (
                   fines.map((fine) => (
                     <div key={fine.id} className="p-4 bg-white rounded-academic border border-oxford-blue/5 shadow-sm hover:border-red-200 transition-colors flex justify-between items-center group">
@@ -170,7 +169,7 @@ const UserDetailModal = ({ isOpen, onClose, user }: UserDetailModalProps) => {
                   ))
                 )}
               </div>
-            </section>Section Content
+            </section>
           </div>
         </div>
 
@@ -180,7 +179,7 @@ const UserDetailModal = ({ isOpen, onClose, user }: UserDetailModalProps) => {
             onClick={onClose}
             className="px-8 py-3 bg-oxford-blue text-parchment font-mono text-[10px] font-black uppercase tracking-[0.2em] rounded-academic hover:shadow-xl hover:-translate-y-0.5 transition-all cursor-pointer active:scale-95"
           >
-            Close Scholar Profile
+            Close Profile
           </button>
         </div>
       </div>

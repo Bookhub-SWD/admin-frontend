@@ -97,8 +97,8 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onSuccess 
         {/* Header */}
         <div className="p-6 border-b border-oxford-blue/10 flex justify-between items-center bg-white/50">
           <div>
-            <h2 className="text-2xl font-serif font-black text-oxford-blue tracking-tight uppercase">Enter New Subject</h2>
-            <p className="text-xs font-mono font-black text-brass uppercase tracking-widest mt-1">Personnel Registry Induction</p>
+            <h2 className="text-2xl font-serif font-black text-oxford-blue tracking-tight uppercase">Add New User</h2>
+            <p className="text-xs font-mono font-black text-brass uppercase tracking-widest mt-1">Create user account</p>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-oxford-blue/5 rounded-full transition-colors cursor-pointer">
             <X className="h-6 w-6 text-oxford-blue/40" />
@@ -126,7 +126,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onSuccess 
             {/* Email */}
             <div className="space-y-2">
               <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
-                <Mail className="h-3 w-3 text-brass" /> Academic Email
+                <Mail className="h-3 w-3 text-brass" /> Email Address
               </label>
               <input
                 required
@@ -142,7 +142,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onSuccess 
             {/* Role */}
             <div className="space-y-2">
               <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
-                <Shield className="h-3 w-3 text-brass" /> Authorization Tier
+                <Shield className="h-3 w-3 text-brass" /> User Role
               </label>
               <select
                 name="role_id"
@@ -174,7 +174,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onSuccess 
             {/* Phone */}
             <div className="space-y-2">
               <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
-                <Phone className="h-3 w-3 text-brass" /> Communication Line
+                <Phone className="h-3 w-3 text-brass" /> Phone Number
               </label>
               <input
                 name="phone"
@@ -189,7 +189,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onSuccess 
           {/* Address */}
           <div className="space-y-2">
             <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
-              <MapPin className="h-3 w-3 text-brass" /> Residentiary Detail
+              <MapPin className="h-3 w-3 text-brass" /> Home Address
             </label>
             <textarea
               name="address"
@@ -216,7 +216,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onSuccess 
             disabled={loading}
             className="text-xs font-mono font-black text-oxford-blue/60 uppercase tracking-widest hover:text-oxford-blue disabled:opacity-30 cursor-pointer"
           >
-            Abort Induction
+            Cancel
           </button>
           <button
             onClick={handleSubmit}
@@ -231,7 +231,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose, onSuccess 
             ) : (
               <>
                 <UserPlus className="h-4 w-4" />
-                Induct New Subject
+                Add User
               </>
             )}
           </button>

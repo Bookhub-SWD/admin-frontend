@@ -75,13 +75,13 @@ const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, onSuccess, eve
       }
 
       if (res.data.ok) {
-        enqueueSnackbar(`Event ${event?.id ? 'updated' : 'created'} successfully!`, { variant: 'success' });
+        enqueueSnackbar(`Sự kiện ${event?.id ? 'đã cập nhật' : 'đã tạo'} thành công!`, { variant: 'success' });
         onSuccess();
         onClose();
       }
     } catch (err: any) {
       console.error('EventModal: Error submitting form', err);
-      enqueueSnackbar(err.response?.data?.message || 'Failed to save event', { variant: 'error' });
+      enqueueSnackbar(err.response?.data?.message || 'Lưu sự kiện thất bại', { variant: 'error' });
     } finally {
       setLoading(false);
     }
@@ -96,9 +96,9 @@ const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, onSuccess, eve
         <div className="p-6 border-b border-oxford-blue/10 flex justify-between items-center bg-white/50">
           <div>
             <h2 className="text-2xl font-serif font-black text-oxford-blue tracking-tight uppercase">
-              {event?.id ? 'Edit Ceremony' : 'Charter New Event'}
+              {event?.id ? 'Chỉnh sửa Sự kiện' : 'Tạo Sự kiện mới'}
             </h2>
-            <p className="text-xs font-mono font-black text-brass uppercase tracking-widest mt-1">Institutional Calendar Management</p>
+            <p className="text-xs font-mono font-black text-brass uppercase tracking-widest mt-1">Quản lý Lịch biểu Thư viện</p>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-oxford-blue/5 rounded-full transition-colors cursor-pointer">
             <X className="h-6 w-6 text-oxford-blue/40" />
@@ -109,14 +109,14 @@ const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, onSuccess, eve
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-8 space-y-6">
           <div className="space-y-2">
             <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
-              Event Title
+              Tên Sự kiện
             </label>
             <input
               required
               name="title"
               value={formData.title}
               onChange={handleChange}
-              placeholder="e.g. Annual Symposium on Digital Humanities"
+              placeholder="VD: Hội thảo Số hoá Thư viện Thường niên"
               className="w-full bg-white border border-oxford-blue/20 rounded-academic px-4 py-3 text-base text-oxford-blue focus:outline-none focus:border-brass/30 font-serif font-black shadow-sm"
             />
           </div>
@@ -124,7 +124,7 @@ const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, onSuccess, eve
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
              <div className="space-y-2">
                 <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
-                  <Calendar className="h-3.5 w-3.5 text-brass" /> Canonical Start
+                  <Calendar className="h-3.5 w-3.5 text-brass" /> Thời gian bắt đầu
                 </label>
                 <input
                   required
@@ -137,7 +137,7 @@ const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, onSuccess, eve
              </div>
              <div className="space-y-2">
                 <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
-                  <Calendar className="h-3.5 w-3.5 text-brass" /> Canonical End
+                  <Calendar className="h-3.5 w-3.5 text-brass" /> Thời gian kết thúc
                 </label>
                 <input
                   required
@@ -153,26 +153,26 @@ const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, onSuccess, eve
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
              <div className="space-y-2">
                 <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
-                  <MapPin className="h-3.5 w-3.5 text-brass" /> Ceremony Venue
+                  <MapPin className="h-3.5 w-3.5 text-brass" /> Địa điểm tổ chức
                 </label>
                 <input
                   required
                   name="location"
                   value={formData.location}
                   onChange={handleChange}
-                  placeholder="e.g. Great Hall, West Wing"
+                  placeholder="VD: Hội trường lớn, Khu A"
                   className="w-full bg-white border border-oxford-blue/20 rounded-academic px-4 py-2.5 text-sm text-oxford-blue focus:outline-none focus:border-brass/30 font-serif font-bold"
                 />
              </div>
              <div className="space-y-2">
                 <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
-                  <QrCode className="h-3.5 w-3.5 text-brass" /> Protocol Code
+                  <QrCode className="h-3.5 w-3.5 text-brass" /> Mã Sự kiện
                 </label>
                 <input
                   name="code"
                   value={formData.code}
                   onChange={handleChange}
-                  placeholder="e.g. SYM-2024-01"
+                  placeholder="VD: EVT-2024-01"
                   className="w-full bg-white border border-oxford-blue/20 rounded-academic px-4 py-2.5 text-sm text-brass font-mono font-black uppercase tracking-widest"
                 />
              </div>
@@ -180,7 +180,7 @@ const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, onSuccess, eve
 
           <div className="space-y-2">
             <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
-              <Globe className="h-3.5 w-3.5 text-brass" /> Visual Asset URL (Banner)
+              <Globe className="h-3.5 w-3.5 text-brass" /> Đường dẫn Ảnh bìa (Banner)
             </label>
             <input
               name="banner_url"
@@ -193,14 +193,14 @@ const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, onSuccess, eve
 
           <div className="space-y-2">
             <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
-              <AlignLeft className="h-3.5 w-3.5 text-brass" /> Event Dossier / Description
+              <AlignLeft className="h-3.5 w-3.5 text-brass" /> Mô tả chi tiết sự kiện
             </label>
             <textarea
               name="description"
               value={formData.description}
               onChange={handleChange}
               rows={4}
-              placeholder="Provide a detailed scholarly description of the event..."
+              placeholder="Cung cấp mô tả chi tiết cho sự kiện này..."
               className="w-full bg-white border border-oxford-blue/20 rounded-academic px-4 py-2.5 text-sm text-oxford-blue focus:outline-none focus:border-brass/30 font-serif shadow-sm resize-none"
             />
           </div>
@@ -214,7 +214,7 @@ const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, onSuccess, eve
             disabled={loading}
             className="text-xs font-mono font-black text-oxford-blue/60 uppercase tracking-widest hover:text-oxford-blue disabled:opacity-30 cursor-pointer"
           >
-            Acknowledge & Cancel
+            Huỷ bỏ
           </button>
           <button
             onClick={handleSubmit}
@@ -224,12 +224,12 @@ const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, onSuccess, eve
             {loading ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Validating...
+                Đang lưu...
               </>
             ) : (
               <>
                 <Save className="h-4 w-4" />
-                Commit Protocol
+                Lưu sự kiện
               </>
             )}
           </button>

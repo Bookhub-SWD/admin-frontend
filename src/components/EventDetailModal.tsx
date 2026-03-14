@@ -51,7 +51,7 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
             <X className="h-6 w-6" />
           </button>
           <div className="absolute bottom-6 left-8 right-8">
-            <div className="text-[10px] font-mono font-black text-brass tracking-[0.3em] mb-2 uppercase">Protocol Detail View</div>
+            <div className="text-[10px] font-mono font-black text-brass tracking-[0.3em] mb-2 uppercase">Chi tiết Sự kiện</div>
             <h2 className="text-3xl font-serif font-black text-parchment tracking-tight leading-none uppercase">{event.title}</h2>
           </div>
         </div>
@@ -63,26 +63,26 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
             {/* Primary Details */}
             <div className="space-y-8">
               <div className="space-y-4">
-                <h3 className="text-[10px] font-mono font-black text-oxford-blue/40 uppercase tracking-widest border-b border-oxford-blue/5 pb-2">Temporal & Spatial Parameters</h3>
+                <h3 className="text-[10px] font-mono font-black text-oxford-blue/40 uppercase tracking-widest border-b border-oxford-blue/5 pb-2">Thời gian & Địa điểm</h3>
                 <div className="space-y-3">
                   <div className="flex items-center gap-4 text-oxford-blue">
                     <Clock className="h-4 w-4 text-brass" />
                     <div>
-                      <div className="text-[10px] font-mono font-black uppercase text-charcoal/50">Start Time</div>
+                      <div className="text-[10px] font-mono font-black uppercase text-charcoal/50">Bắt đầu</div>
                       <div className="text-sm font-serif font-bold">{formatDate(event.start_time)}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-4 text-oxford-blue">
                     <Clock className="h-4 w-4 text-brass" />
                     <div>
-                      <div className="text-[10px] font-mono font-black uppercase text-charcoal/50">End Time</div>
+                      <div className="text-[10px] font-mono font-black uppercase text-charcoal/50">Kết thúc</div>
                       <div className="text-sm font-serif font-bold">{formatDate(event.end_time)}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-4 text-oxford-blue">
                     <MapPin className="h-4 w-4 text-brass" />
                     <div>
-                      <div className="text-[10px] font-mono font-black uppercase text-charcoal/50">Ceremony Venue</div>
+                      <div className="text-[10px] font-mono font-black uppercase text-charcoal/50">Địa điểm</div>
                       <div className="text-sm font-serif font-bold">{event.location}</div>
                     </div>
                   </div>
@@ -90,11 +90,11 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-[10px] font-mono font-black text-oxford-blue/40 uppercase tracking-widest border-b border-oxford-blue/5 pb-2">Institutional Identification</h3>
+                <h3 className="text-[10px] font-mono font-black text-oxford-blue/40 uppercase tracking-widest border-b border-oxford-blue/5 pb-2">Thông tin Hệ thống</h3>
                 <div className="flex items-center gap-4 text-oxford-blue">
                   <QrCode className="h-4 w-4 text-brass" />
                   <div>
-                    <div className="text-[10px] font-mono font-black uppercase text-charcoal/50">Registry Code</div>
+                    <div className="text-[10px] font-mono font-black uppercase text-charcoal/50">Mã Sự kiện</div>
                     <div className="text-sm font-mono font-black text-brass uppercase">{event.code || `EVT-${String(event.id).substring(0,6)}`}</div>
                   </div>
                 </div>
@@ -104,16 +104,16 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
             {/* Attendance & Volume Metrics */}
             <div className="space-y-8">
                <div className="space-y-4">
-                 <h3 className="text-[10px] font-mono font-black text-oxford-blue/40 uppercase tracking-widest border-b border-oxford-blue/5 pb-2">Scholarly Participation</h3>
+                 <h3 className="text-[10px] font-mono font-black text-oxford-blue/40 uppercase tracking-widest border-b border-oxford-blue/5 pb-2">Thông tin Người tham gia</h3>
                  <div className="card-academic p-5 bg-white shadow-sm space-y-6">
                     <div className="flex justify-between items-end">
                        <div>
-                         <div className="text-[10px] font-mono font-black text-charcoal/40 uppercase tracking-widest mb-1">Attendance Ratio</div>
+                         <div className="text-[10px] font-mono font-black text-charcoal/40 uppercase tracking-widest mb-1">Tỷ lệ tham gia</div>
                          <div className="text-3xl font-serif font-black text-oxford-blue tracking-tighter">{checkins} / {registrants}</div>
                        </div>
                        <div className="text-right">
                          <div className="text-[32px] font-serif font-black text-brass leading-none">{attendanceRate.toFixed(1)}%</div>
-                         <div className="text-[8px] font-mono font-black text-brass/60 uppercase tracking-widest mt-1">Velocity Goal</div>
+                         <div className="text-[8px] font-mono font-black text-brass/60 uppercase tracking-widest mt-1">Ghi nhận</div>
                        </div>
                     </div>
                     <div className="h-2.5 bg-oxford-blue/5 rounded-full overflow-hidden shadow-inner">
@@ -125,11 +125,11 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
                     <div className="grid grid-cols-2 gap-4">
                        <div className="flex items-center gap-2">
                          <Users className="h-3.5 w-3.5 text-oxford-blue/40" />
-                         <span className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest">{registrants} Charter Members</span>
+                         <span className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest">{registrants} Người đăng ký</span>
                        </div>
                        <div className="flex items-center gap-2">
                          <CheckCircle2 className="h-3.5 w-3.5 text-brass" />
-                         <span className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest">{checkins} Verified Present</span>
+                         <span className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest">{checkins} Đã điểm danh</span>
                        </div>
                     </div>
                  </div>
@@ -139,12 +139,12 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
 
           {/* Extended Dossier */}
           <div className="space-y-4">
-            <h3 className="text-[10px] font-mono font-black text-oxford-blue/40 uppercase tracking-widest border-b border-oxford-blue/5 pb-2">Extended Event Dossier</h3>
+            <h3 className="text-[10px] font-mono font-black text-oxford-blue/40 uppercase tracking-widest border-b border-oxford-blue/5 pb-2">Mô tả chi tiết</h3>
             <div className="bg-white/50 p-6 rounded-academic border border-oxford-blue/5 min-h-[120px]">
               <div className="flex gap-4">
                 <AlignLeft className="h-5 w-5 text-brass shrink-0 mt-1" />
                 <p className="text-sm font-serif leading-relaxed text-oxford-blue/80 italic">
-                  {event.description || "No further details have been cataloged for this specific ceremony protocol."}
+                  {event.description || "Không có mô tả chi tiết cho sự kiện này."}
                 </p>
               </div>
             </div>
@@ -153,12 +153,12 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({ isOpen, onClose, ev
 
         {/* Footer Actions */}
         <div className="p-6 border-t border-oxford-blue/10 flex justify-end items-center bg-white/50 gap-4">
-           <div className="text-[10px] font-mono font-black text-charcoal/40 uppercase tracking-widest mr-auto">Registry Integrity Verified</div>
+           <div className="text-[10px] font-mono font-black text-charcoal/40 uppercase tracking-widest mr-auto">Dữ liệu hệ thống đã xác thực</div>
            <button
              onClick={onClose}
              className="px-8 py-3 bg-oxford-blue text-parchment text-[10px] font-mono font-black uppercase tracking-[0.2em] rounded-academic shadow-lg shadow-oxford-blue/20 hover:bg-brass hover:text-oxford-blue transition-all duration-300 cursor-pointer"
            >
-             Close Dossier
+             Đóng
            </button>
         </div>
       </div>

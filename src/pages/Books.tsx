@@ -83,22 +83,22 @@ const Books = () => {
       {/* Page Header */}
       <div className="flex justify-between items-end border-b border-oxford-blue/10 pb-8">
         <div>
-          <h1 className="text-4xl font-serif font-black text-oxford-blue mb-2 tracking-tight">Library Management</h1>
-          <p className="text-charcoal/70 font-sans font-medium italic">Manage your library inventory, status, and book assets.</p>
+          <h1 className="text-4xl font-serif font-black text-oxford-blue mb-2 tracking-tight">Quản lý Sách</h1>
+          <p className="text-charcoal/70 font-sans font-medium italic">Quản lý kho sách, trạng thái và tài sản thư viện.</p>
         </div>
         <div className="flex gap-4">
           <button 
             onClick={() => setIsImportModalOpen(true)}
             className="px-6 py-2 border border-oxford-blue/30 text-oxford-blue font-mono text-xs font-black uppercase tracking-widest hover:bg-oxford-blue/5 transition-colors rounded-academic cursor-pointer"
           >
-            Import Excel
+            Nhập từ Excel
           </button>
           <button 
             onClick={() => setIsAddModalOpen(true)}
             className="btn-academic flex items-center gap-2 text-xs cursor-pointer"
           >
             <Plus className="h-4 w-4" />
-            Add New Book
+            Thêm Sách mới
           </button>
 
         </div>
@@ -111,7 +111,7 @@ const Books = () => {
           <div className="flex gap-8">
             <div className="flex items-center gap-2 group cursor-pointer">
               <BookMarked className="h-4 w-4 text-brass" />
-              <span className="text-xs font-mono font-black text-oxford-blue uppercase tracking-widest border-b border-brass/50">Volumes Cataloged: {totalItems.toLocaleString()}</span>
+              <span className="text-xs font-mono font-black text-oxford-blue uppercase tracking-widest border-b border-brass/50">Tổng số sách: {totalItems.toLocaleString()}</span>
             </div>
           </div>
           <div className="flex gap-4">
@@ -121,7 +121,7 @@ const Books = () => {
                 type="text" 
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search by ISBN or Title..." 
+                placeholder="Tìm theo ISBN hoặc Tên sách..." 
                 className="bg-white border border-oxford-blue/20 rounded-academic pl-10 pr-4 py-2 text-xs text-charcoal focus:outline-none focus:border-brass/30 w-64 uppercase font-mono font-black tracking-widest"
               />
             </div>
@@ -131,7 +131,7 @@ const Books = () => {
                 onChange={(e) => setCategory(e.target.value)}
                 className="bg-white border border-oxford-blue/20 rounded-academic px-4 py-2 text-xs text-charcoal focus:outline-none focus:border-brass/30 font-mono font-black uppercase tracking-widest cursor-pointer appearance-none min-w-[150px]"
             >
-                <option value="">All Categories</option>
+                <option value="">Tất cả danh mục</option>
                 {categories.map(cat => (
                     <option key={cat} value={cat}>{cat}</option>
                 ))}
@@ -142,7 +142,7 @@ const Books = () => {
                 onChange={(e) => setSubject(e.target.value)}
                 className="bg-white border border-oxford-blue/20 rounded-academic px-4 py-2 text-xs text-charcoal focus:outline-none focus:border-brass/30 font-mono font-black uppercase tracking-widest cursor-pointer appearance-none min-w-[150px]"
             >
-                <option value="">All Subjects</option>
+                <option value="">Tất cả chủ đề</option>
                 {subjects.map(sub => (
                     <option key={sub.id} value={sub.id}>{sub.name}</option>
                 ))}
@@ -155,7 +155,7 @@ const Books = () => {
                     setSubject('');
                 }}
                 className="p-2 border border-oxford-blue/10 rounded-academic text-oxford-blue/40 hover:text-brass transition-colors cursor-pointer"
-                title="Clear Filters"
+                title="Xoá bộ lọc"
             >
               <Filter className="h-4 w-4" />
             </button>
@@ -165,11 +165,11 @@ const Books = () => {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-oxford-blue text-parchment uppercase font-mono text-xs font-black tracking-[0.2em]">
-              <th className="px-8 py-5 border-r border-parchment/10">Book Details</th>
-              <th className="px-8 py-5 border-r border-parchment/10">ISBN No.</th>
-              <th className="px-8 py-5 border-r border-parchment/10">Category</th>
-              <th className="px-8 py-5 border-r border-parchment/10">Availability</th>
-              <th className="px-8 py-5 text-right">Actions</th>
+              <th className="px-8 py-5 border-r border-parchment/10">Thông tin sách</th>
+              <th className="px-8 py-5 border-r border-parchment/10">Mã ISBN</th>
+              <th className="px-8 py-5 border-r border-parchment/10">Danh mục</th>
+              <th className="px-8 py-5 border-r border-parchment/10">Tình trạng</th>
+              <th className="px-8 py-5 text-right">Thao tác</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-oxford-blue/5">
@@ -178,14 +178,14 @@ const Books = () => {
                 <td colSpan={5} className="px-8 py-20 text-center">
                   <div className="flex flex-col items-center gap-4">
                     <Loader2 className="h-8 w-8 text-oxford-blue animate-spin" />
-                    <span className="text-xs font-mono font-black text-oxford-blue/40 uppercase tracking-[0.3em]">Accessing Library Archives...</span>
+                    <span className="text-xs font-mono font-black text-oxford-blue/40 uppercase tracking-[0.3em]">Đang tải dữ liệu thư viện...</span>
                   </div>
                 </td>
               </tr>
             ) : books.length === 0 ? (
               <tr>
                 <td colSpan={5} className="px-8 py-20 text-center text-xs font-mono font-black text-charcoal/40 uppercase tracking-widest italic">
-                  No records found in the library.
+                  Không tìm thấy dữ liệu sách.
                 </td>
               </tr>
             ) : (
@@ -202,7 +202,7 @@ const Books = () => {
                   </td>
                   <td className="px-8 py-6 border-r border-oxford-blue/5">
                     <span className="text-xs font-mono font-black text-charcoal/80 uppercase tracking-widest border border-oxford-blue/20 px-2 py-1 rounded-academic">
-                       {book.subjects?.[0]?.subject?.category || 'Uncategorized'}
+                       {book.subjects?.[0]?.subject?.category || 'Chưa phân loại'}
                     </span>
                   </td>
                   <td className="px-8 py-6 border-r border-oxford-blue/5">
@@ -213,14 +213,14 @@ const Books = () => {
                       <span className={`text-xs font-mono font-black uppercase tracking-widest ${
                         book.available_copies > 0 ? 'text-brass' : 'text-oxford-blue/80'
                       }`}>
-                        {book.available_copies > 0 ? 'In Stock' : 'Borrowed'} ({book.available_copies}/{book.total_copies})
+                        {book.available_copies > 0 ? 'Còn sách' : 'Đã mượn'} ({book.available_copies}/{book.total_copies})
                       </span>
                     </div>
                   </td>
                   <td className="px-8 py-6 text-right">
                     <div className="flex justify-end gap-2">
                       <button 
-                        title="Manage Copies"
+                        title="Quản lý bản sao"
                         onClick={() => {
                           setSelectedBook({ id: book.id, title: book.title });
                           setIsCopiesModalOpen(true);
@@ -243,19 +243,19 @@ const Books = () => {
         </table>
         
         <div className="p-6 bg-parchment/10 border-t border-oxford-blue/5 flex justify-between items-center text-xs font-mono font-black text-charcoal/60 uppercase tracking-[0.3em]">
-          <span>Showing 1-{books.length} of {totalItems.toLocaleString()} books</span>
+          <span>Hiển thị 1-{books.length} trên {totalItems.toLocaleString()} sách</span>
           <div className="flex gap-4">
             <button 
               className="p-2 hover:text-oxford-blue disabled:opacity-20 font-black cursor-pointer border border-transparent hover:border-oxford-blue/10 rounded-academic transition-colors" 
               disabled
-              title="Previous Page"
+              title="Trang trước"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
             <button 
               className="p-2 hover:text-oxford-blue font-black cursor-pointer border border-transparent hover:border-oxford-blue/10 rounded-academic transition-colors" 
               onClick={() => fetchData()}
-              title="Refresh / Next"
+              title="Làm mới / Kế tiếp"
             >
               <ChevronRight className="h-4 w-4" />
             </button>

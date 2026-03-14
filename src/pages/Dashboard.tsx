@@ -101,22 +101,22 @@ const Dashboard = () => {
       {/* Header Section */}
       <div className="flex justify-between items-end border-b border-oxford-blue/10 pb-8">
         <div>
-          <h1 className="text-4xl font-serif font-black text-oxford-blue mb-2 tracking-tight">Librarian Dashboard</h1>
-          <p className="text-charcoal/70 font-sans italic">Management metrics for the library operations.</p>
+          <h1 className="text-4xl font-serif font-black text-oxford-blue mb-2 tracking-tight">Bảng điều khiển Thủ thư</h1>
+          <p className="text-charcoal/70 font-sans italic">Các chỉ số quản lý hoạt động thư viện.</p>
         </div>
         <div className="text-right">
-          <div className="text-xs font-mono font-black text-brass uppercase tracking-widest mb-1">Status: Operational</div>
-          <div className="text-xs text-charcoal/60 font-medium tracking-tight">Last updated: {new Date().toLocaleTimeString()}</div>
+          <div className="text-xs font-mono font-black text-brass uppercase tracking-widest mb-1">Trạng thái: Hoạt động</div>
+          <div className="text-xs text-charcoal/60 font-medium tracking-tight">Cập nhật lần cuối: {new Date().toLocaleTimeString()}</div>
         </div>
       </div>
 
       {/* Primary Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {[
-          { label: 'Total Books', value: (summaryData.total_books || 0).toLocaleString(), icon: Library, color: 'text-oxford-blue', subtitle: 'Books in Collection' },
-          { label: 'Active Scholars', value: (summaryData.active_users || 0).toLocaleString(), icon: GraduationCap, color: 'text-oxford-blue', subtitle: 'Verified Members' },
-          { label: 'Borrowed Today', value: (summaryData.borrowed_today || 0).toLocaleString(), icon: Newspaper, color: 'text-brass', subtitle: 'Daily Circulation' },
-          { label: 'Borrowed Books', value: (summaryData.currently_borrowed || 0).toLocaleString(), icon: Archive, color: 'text-oxford-blue', subtitle: 'Active Loans' },
+          { label: 'Tổng số sách', value: (summaryData.total_books || 0).toLocaleString(), icon: Library, color: 'text-oxford-blue', subtitle: 'Sách trong thư viện' },
+          { label: 'Độc giả hoạt động', value: (summaryData.active_users || 0).toLocaleString(), icon: GraduationCap, color: 'text-oxford-blue', subtitle: 'Thành viên đã xác minh' },
+          { label: 'Mượn hôm nay', value: (summaryData.borrowed_today || 0).toLocaleString(), icon: Newspaper, color: 'text-brass', subtitle: 'Lưu thông trong ngày' },
+          { label: 'Sách đang mượn', value: (summaryData.currently_borrowed || 0).toLocaleString(), icon: Archive, color: 'text-oxford-blue', subtitle: 'Lượt mượn hiện tại' },
         ].map((stat, i) => (
           <div key={i} className="card-academic p-6 border-t-4 border-t-oxford-blue group hover:border-t-brass transition-all duration-500 bg-white">
             <div className="flex items-center justify-between mb-4">
@@ -138,13 +138,13 @@ const Dashboard = () => {
             <div>
               <h3 className="text-xl font-serif font-bold text-oxford-blue mb-1 flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-brass" />
-                Borrowing Trends
+                Xu hướng mượn sách
               </h3>
-              <p className="text-xs text-charcoal/60 font-medium tracking-tight">Weekly book loan distribution.</p>
+              <p className="text-xs text-charcoal/60 font-medium tracking-tight">Phân bổ mượn sách hàng tuần.</p>
             </div>
             <select className="bg-parchment border-none text-xs font-mono font-black uppercase tracking-widest focus:ring-0 cursor-pointer">
-              <option>Last 7 Days</option>
-              <option>This Month</option>
+              <option>7 ngày qua</option>
+              <option>Tháng này</option>
             </select>
           </div>
           
@@ -153,7 +153,7 @@ const Dashboard = () => {
               <div className="absolute inset-0 flex items-center justify-center bg-parchment/10 backdrop-blur-[2px] z-10">
                 <div className="flex flex-col items-center gap-4">
                   <Loader2 className="h-8 w-8 text-oxford-blue animate-spin" />
-                  <span className="text-xs font-mono font-black text-oxford-blue/40 uppercase tracking-[0.3em]">Accessing Archives...</span>
+                  <span className="text-xs font-mono font-black text-oxford-blue/40 uppercase tracking-[0.3em]">Đang tải...</span>
                 </div>
               </div>
             ) : (
@@ -198,16 +198,16 @@ const Dashboard = () => {
           <div>
             <h3 className="text-xl font-serif font-bold text-oxford-blue mb-1 flex items-center gap-2">
               <Newspaper className="h-5 w-5 text-brass" />
-              Book Categories
+              Danh mục sách
             </h3>
-            <p className="text-xs text-charcoal/40 font-medium mb-8">Inventory distribution by category.</p>
+            <p className="text-xs text-charcoal/40 font-medium mb-8">Phân bổ kho sách theo danh mục.</p>
           </div>
 
           <div className="h-64 w-full relative">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={categoryData.length > 0 ? categoryData : [{ name: 'Loading...', count: 1 }]}
+                  data={categoryData.length > 0 ? categoryData : [{ name: 'Đang tải...', count: 1 }]}
                   cx="50%"
                   cy="50%"
                   innerRadius={65}
@@ -228,7 +228,7 @@ const Dashboard = () => {
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="text-center">
                 <div className="text-2xl font-serif font-black text-oxford-blue">{loading ? '...' : (summaryData.total_books || 0).toLocaleString()}</div>
-                <div className="text-[11px] font-mono font-black text-charcoal/50 uppercase tracking-[0.2em]">Total Books</div>
+                <div className="text-[11px] font-mono font-black text-charcoal/50 uppercase tracking-[0.2em]">Tổng số sách</div>
               </div>
             </div>
           </div>
@@ -244,7 +244,7 @@ const Dashboard = () => {
                </div>
              ))}
              {!loading && categoryData.length === 0 && (
-                <div className="text-center text-xs text-charcoal/50 italic py-4">No categories found.</div>
+                <div className="text-center text-xs text-charcoal/50 italic py-4">Không tìm thấy danh mục.</div>
              )}
           </div>
         </div>
@@ -254,24 +254,24 @@ const Dashboard = () => {
       <div className="card-academic p-8 bg-white">
         <h3 className="text-xl font-serif font-bold text-oxford-blue mb-8 uppercase tracking-tight flex items-center gap-2">
             <Archive className="h-5 w-5 text-brass" />
-            Registry Activity Log
+            Nhật ký hoạt động
         </h3>
         <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
                 <thead>
                     <tr className="bg-oxford-blue text-parchment uppercase font-mono text-[10px] font-black tracking-[0.2em]">
-                        <th className="px-6 py-4 border-r border-parchment/10">Member</th>
-                        <th className="px-6 py-4 border-r border-parchment/10">Action</th>
-                        <th className="px-6 py-4 border-r border-parchment/10">Archival Item</th>
-                        <th className="px-6 py-4 border-r border-parchment/10 font-black">Timestamp</th>
-                        <th className="px-6 py-4 text-right">Status</th>
+                        <th className="px-6 py-4 border-r border-parchment/10">Thành viên</th>
+                        <th className="px-6 py-4 border-r border-parchment/10">Hành động</th>
+                        <th className="px-6 py-4 border-r border-parchment/10">Tài liệu</th>
+                        <th className="px-6 py-4 border-r border-parchment/10 font-black">Thời gian</th>
+                        <th className="px-6 py-4 text-right">Trạng thái</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-oxford-blue/5">
                     {loading ? (
-                        <tr><td colSpan={5} className="p-10 text-center animate-pulse font-mono text-xs uppercase tracking-widest text-oxford-blue/40">Accessing archives...</td></tr>
+                        <tr><td colSpan={5} className="p-10 text-center animate-pulse font-mono text-xs uppercase tracking-widest text-oxford-blue/40">Đang truy xuất dữ liệu...</td></tr>
                     ) : recentActivity.length === 0 ? (
-                        <tr><td colSpan={5} className="p-10 text-center font-serif italic text-charcoal/30">No recent transactions recorded.</td></tr>
+                        <tr><td colSpan={5} className="p-10 text-center font-serif italic text-charcoal/30">Không có giao dịch gần đây.</td></tr>
                     ) : (
                         recentActivity.map((act) => (
                             <tr key={act.id} className="hover:bg-parchment/30 transition-colors">

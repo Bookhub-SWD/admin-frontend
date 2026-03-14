@@ -101,8 +101,8 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, onSucces
         {/* Header */}
         <div className="p-6 border-b border-oxford-blue/10 flex justify-between items-center bg-white/50">
           <div>
-            <h2 className="text-2xl font-serif font-black text-oxford-blue tracking-tight uppercase">Modify Credentials</h2>
-            <p className="text-xs font-mono font-black text-brass uppercase tracking-widest mt-1">Identity & Authorization Update</p>
+            <h2 className="text-2xl font-serif font-black text-oxford-blue tracking-tight uppercase">Edit User Profile</h2>
+            <p className="text-xs font-mono font-black text-brass uppercase tracking-widest mt-1">Update account information</p>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-oxford-blue/5 rounded-full transition-colors cursor-pointer">
             <X className="h-6 w-6 text-oxford-blue/40" />
@@ -141,7 +141,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, onSucces
             {/* Role */}
             <div className="space-y-2">
               <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
-                <Shield className="h-3 w-3 text-brass" /> Authorization Tier
+                <Shield className="h-3 w-3 text-brass" /> User Role
               </label>
               <select
                 name="role_id"
@@ -183,7 +183,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, onSucces
           {/* Address */}
           <div className="space-y-2">
             <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
-              <MapPin className="h-3 w-3 text-brass" /> Physical Address
+              <MapPin className="h-3 w-3 text-brass" /> Home Address
             </label>
             <textarea
               name="address"
@@ -203,7 +203,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, onSucces
             disabled={loading}
             className="text-xs font-mono font-black text-oxford-blue/60 uppercase tracking-widest hover:text-oxford-blue disabled:opacity-30 cursor-pointer"
           >
-            Acknowledge & Cancel
+            Cancel
           </button>
           <button
             onClick={handleSubmit}
@@ -218,7 +218,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, onSucces
             ) : (
               <>
                 <Save className="h-4 w-4" />
-                Commit Changes
+                Save Changes
               </>
             )}
           </button>

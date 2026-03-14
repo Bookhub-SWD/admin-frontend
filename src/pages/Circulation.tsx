@@ -46,7 +46,7 @@ const Circulation = () => {
       }
     } catch (err) {
       console.error('Circulation: Error fetching data', err);
-      enqueueSnackbar('Failed to retrieve circulation archives', { variant: 'error' });
+      enqueueSnackbar('Tải dữ liệu mượn trả thất bại', { variant: 'error' });
     } finally {
       setLoading(false);
     }
@@ -60,11 +60,11 @@ const Circulation = () => {
     try {
       const res = await api.post(`/payments/${fineId}/pay`);
       if (res.data.ok) {
-        enqueueSnackbar('Financial obligation settled', { variant: 'success' });
+        enqueueSnackbar('Thanh toán thành công', { variant: 'success' });
         fetchData();
       }
     } catch (err: any) {
-      enqueueSnackbar(err.response?.data?.message || 'Transaction failed', { variant: 'error' });
+      enqueueSnackbar(err.response?.data?.message || 'Giao dịch thất bại', { variant: 'error' });
     }
   };
 
@@ -99,21 +99,21 @@ const Circulation = () => {
       {/* Header */}
       <div className="flex justify-between items-end border-b border-oxford-blue/10 pb-8">
         <div>
-          <h1 className="text-4xl font-serif font-black text-oxford-blue mb-2 tracking-tight uppercase">Circulation Management</h1>
-          <p className="text-charcoal/70 font-sans font-medium italic">Monitor book loans, track overdue items, and manage scholarly fines.</p>
+          <h1 className="text-4xl font-serif font-black text-oxford-blue mb-2 tracking-tight uppercase">Mượn & Trả sách</h1>
+          <p className="text-charcoal/70 font-sans font-medium italic">Theo dõi mượn trả sách, tài liệu quá hạn và quản lý tiền phạt.</p>
         </div>
         <div className="flex gap-4">
           <button 
             onClick={() => { setViewMode('loans'); setStatusFilter(''); }}
             className={`px-6 py-2 rounded-academic font-mono text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'loans' ? 'bg-oxford-blue text-parchment shadow-lg' : 'bg-white text-oxford-blue/40 hover:text-oxford-blue border border-oxford-blue/5'}`}
           >
-            Loan Registry
+            Danh sách Mượn
           </button>
           <button 
             onClick={() => { setViewMode('fines'); setStatusFilter(''); }}
             className={`px-6 py-2 rounded-academic font-mono text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'fines' ? 'bg-oxford-blue text-parchment shadow-lg' : 'bg-white text-oxford-blue/40 hover:text-oxford-blue border border-oxford-blue/5'}`}
           >
-            Fine Accounts
+            Quản lý Phạt
           </button>
         </div>
       </div>
@@ -121,10 +121,10 @@ const Circulation = () => {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         {[
-          { label: 'Active Loans', value: stats.activeBorrows, icon: BookOpen, color: 'text-oxford-blue', border: 'border-l-oxford-blue' },
-          { label: 'Overdue Items', value: stats.overdueItems, icon: Timer, color: 'text-red-500', border: 'border-l-red-500' },
-          { label: 'Pending Fines', value: stats.pendingFines, icon: AlertCircle, color: 'text-brass', border: 'border-l-brass' },
-          { label: 'Total Revenue', value: `${stats.totalFines.toLocaleString()} VND`, icon: CreditCard, color: 'text-green-600', border: 'border-l-green-600' },
+          { label: 'Đang mượn', value: stats.activeBorrows, icon: BookOpen, color: 'text-oxford-blue', border: 'border-l-oxford-blue' },
+          { label: 'Quá hạn', value: stats.overdueItems, icon: Timer, color: 'text-red-500', border: 'border-l-red-500' },
+          { label: 'Chưa nộp phạt', value: stats.pendingFines, icon: AlertCircle, color: 'text-brass', border: 'border-l-brass' },
+          { label: 'Tổng tiền phạt', value: `${stats.totalFines.toLocaleString()} VND`, icon: CreditCard, color: 'text-green-600', border: 'border-l-green-600' },
         ].map((stat, i) => (
           <div key={i} className={`card-academic p-6 border-l-4 ${stat.border} bg-white shadow-sm`}>
             <div className="flex items-center gap-4 mb-4">
@@ -146,7 +146,7 @@ const Circulation = () => {
               type="text" 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder={`Search ${viewMode === 'loans' ? 'loans' : 'fines'} by scholar or title...`} 
+              placeholder={`Tìm kiếm ${viewMode === 'loans' ? 'đơn mượn' : 'khoản phạt'} theo tên hoặc sách...`} 
               className="bg-white border border-oxford-blue/20 rounded-academic pl-10 pr-4 py-3 text-xs text-charcoal focus:outline-none focus:border-brass/30 w-full uppercase font-mono font-black tracking-widest shadow-sm"
             />
           </div>
@@ -156,23 +156,23 @@ const Circulation = () => {
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="bg-white border border-oxford-blue/20 rounded-academic px-4 py-2 text-xs text-oxford-blue font-mono font-black uppercase tracking-widest cursor-pointer focus:outline-none focus:border-brass/30"
               >
-                <option value="">All Statuses</option>
+                <option value="">Tất cả trạng thái</option>
                 {viewMode === 'loans' ? (
                   <>
-                    <option value="requested">Requested</option>
-                    <option value="borrowed">Borrowed</option>
-                    <option value="overdue">Overdue</option>
-                    <option value="returned">Returned</option>
-                    <option value="cancelled">Cancelled</option>
+                    <option value="requested">Yêu cầu</option>
+                    <option value="borrowed">Đang mượn</option>
+                    <option value="overdue">Quá hạn</option>
+                    <option value="returned">Đã trả</option>
+                    <option value="cancelled">Đã huỷ</option>
                   </>
                 ) : (
                   <>
-                    <option value="pending">Pending</option>
-                    <option value="paid">Paid</option>
+                    <option value="pending">Chưa nộp</option>
+                    <option value="paid">Đã nộp</option>
                   </>
                 )}
               </select>
-              <button onClick={fetchData} className="p-2 border border-oxford-blue/10 rounded-academic text-oxford-blue/40 hover:text-brass transition-colors cursor-pointer group" title="Refresh Archives">
+              <button onClick={fetchData} className="p-2 border border-oxford-blue/10 rounded-academic text-oxford-blue/40 hover:text-brass transition-colors cursor-pointer group" title="Làm mới dữ liệu">
                 <RotateCcw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
               </button>
           </div>
@@ -182,10 +182,10 @@ const Circulation = () => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-oxford-blue text-parchment uppercase font-mono text-[10px] font-black tracking-[0.2em]">
-                <th className="px-8 py-5 border-r border-parchment/10">{viewMode === 'loans' ? 'Scholar & Volume' : 'Fine Details'}</th>
-                <th className="px-8 py-5 border-r border-parchment/10">{viewMode === 'loans' ? 'Loan Period' : 'Associate Loan'}</th>
-                <th className="px-8 py-5 border-r border-parchment/10">Status</th>
-                <th className="px-8 py-5 text-right">Actions</th>
+                <th className="px-8 py-5 border-r border-parchment/10">{viewMode === 'loans' ? 'Người mượn & Sách' : 'Chi tiết Phạt'}</th>
+                <th className="px-8 py-5 border-r border-parchment/10">{viewMode === 'loans' ? 'Thời hạn mượn' : 'Giao dịch mượn'}</th>
+                <th className="px-8 py-5 border-r border-parchment/10">Trạng thái</th>
+                <th className="px-8 py-5 text-right">Thao tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-oxford-blue/5">
@@ -194,14 +194,14 @@ const Circulation = () => {
                    <td colSpan={4} className="px-8 py-20 text-center">
                     <div className="flex flex-col items-center gap-4">
                       <Loader2 className="h-8 w-8 text-oxford-blue animate-spin" />
-                      <span className="text-xs font-mono font-black text-oxford-blue/40 uppercase tracking-[0.3em]">Accessing Circulation Archives...</span>
+                      <span className="text-xs font-mono font-black text-oxford-blue/40 uppercase tracking-[0.3em]">Đang truy xuất dữ liệu...</span>
                     </div>
                   </td>
                 </tr>
               ) : (viewMode === 'loans' ? filteredLoans : filteredFines).length === 0 ? (
                 <tr>
                   <td colSpan={4} className="px-8 py-20 text-center font-mono font-black text-charcoal/40 uppercase italic tracking-widest text-[10px]">
-                    No corresponding records found in the library.
+                    Không tìm thấy dữ liệu phù hợp.
                   </td>
                 </tr>
               ) : (
@@ -233,7 +233,7 @@ const Circulation = () => {
                                 </div>
                                 {item.return_date && (
                                     <div className="text-[9px] font-mono font-black text-green-600 uppercase tracking-widest flex items-center gap-1">
-                                        <CheckCircle2 className="h-3 w-3" /> Returned: {new Date(item.return_date).toLocaleDateString()}
+                                        <CheckCircle2 className="h-3 w-3" /> Đã trả: {new Date(item.return_date).toLocaleDateString()}
                                     </div>
                                 )}
                             </div>
@@ -245,7 +245,7 @@ const Circulation = () => {
                                 item.status === 'returned' ? 'bg-green-50 text-green-700 border border-green-100' :
                                 'bg-oxford-blue/5 text-oxford-blue/60 border border-oxford-blue/10'
                             }`}>
-                                {isOverdue ? 'Overdue' : item.status}
+                                {isOverdue ? 'overdue' : item.status}
                             </div>
                           </td>
                           <td className="px-8 py-6 text-right">
@@ -273,10 +273,10 @@ const Circulation = () => {
                            </td>
                            <td className="px-8 py-6 border-r border-oxford-blue/5">
                                 <div className="text-[10px] font-serif font-black text-oxford-blue uppercase truncate max-w-[200px]">
-                                    {item.borrow_record?.copy?.book?.title || 'System Fine'}
+                                    {item.borrow_record?.copy?.book?.title || 'Phạt hệ thống'}
                                 </div>
                                 <div className="text-[9px] font-mono font-black text-charcoal/30 uppercase tracking-widest mt-1">
-                                    Archive Ref: {item.id.substring(0, 8)}
+                                    Mã giao dịch: {item.id.substring(0, 8)}
                                 </div>
                            </td>
                            <td className="px-8 py-6 border-r border-oxford-blue/5">
@@ -292,7 +292,7 @@ const Circulation = () => {
                                     onClick={() => handlePayFine(item.id)}
                                     className="px-4 py-1.5 bg-oxford-blue text-parchment font-mono text-[9px] font-black uppercase tracking-widest rounded-academic hover:bg-brass transition-colors cursor-pointer active:scale-95 shadow-sm"
                                 >
-                                    Settle Fine
+                                    Nộp phạt
                                 </button>
                               )}
                            </td>

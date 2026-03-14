@@ -48,7 +48,7 @@ const Login = () => {
         if (isAdmin) {
           const now = Date.now();
           if (now - lastSuccessTime > 5000) {
-            enqueueSnackbar(`Login successful. Welcome, ${profile?.full_name || 'Admin'}!`, { variant: 'success' });
+            enqueueSnackbar(`Đăng nhập thành công. Chào mừng, ${profile?.full_name || 'Quản trị viên'}!`, { variant: 'success' });
             lastSuccessTime = now;
           }
           navigate('/', { replace: true });
@@ -57,7 +57,7 @@ const Login = () => {
         } else {
           const now = Date.now();
           if (now - lastSuccessTime > 5000) {
-            enqueueSnackbar('Access denied. Administrator privileges required.', { variant: 'error' });
+            enqueueSnackbar('Từ chối truy cập. Cần có quyền Quản trị viên.', { variant: 'error' });
             lastSuccessTime = now;
           }
           await supabase.auth.signOut();
@@ -68,7 +68,7 @@ const Login = () => {
         }
       } catch (err: any) {
         console.error('Login role check error:', err);
-        setError('Failed to query user role.');
+        setError('Lỗi khi kiểm tra quyền người dùng.');
         setLoading(false);
         isProcessingSession = false;
       }
@@ -93,7 +93,7 @@ const Login = () => {
     setLoading(true);
     setError(null);
     try {
-      enqueueSnackbar('Initiating secure login sequence...', { variant: 'info' });
+      enqueueSnackbar('Đang khởi tạo quá trình đăng nhập bảo mật...', { variant: 'info' });
       const { error: authError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -102,8 +102,8 @@ const Login = () => {
       });
       if (authError) throw authError;
     } catch (err: any) {
-      setError(err.message || 'Failed to sign in with Google');
-      enqueueSnackbar(err.message || 'Verification failed', { variant: 'error' });
+      setError(err.message || 'Đăng nhập Google thất bại');
+      enqueueSnackbar(err.message || 'Xác thực thất bại', { variant: 'error' });
       setLoading(false);
     }
   };
@@ -113,7 +113,7 @@ const Login = () => {
       {/* Background Scholarly Watermark */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
         <span className="text-[25vw] font-serif font-black text-oxford-blue opacity-[0.02] rotate-[-15deg] whitespace-nowrap select-none">
-          ARCHIVAL ACCESS
+          TRUY CẬP HỆ THỐNG
         </span>
       </div>
       
@@ -126,15 +126,15 @@ const Login = () => {
             <Library className="h-10 w-10 text-parchment group-hover:scale-110 transition-transform" />
             <div className="absolute -top-1 -right-1 h-4 w-4 bg-brass rounded-full border-2 border-white"></div>
           </div>
-          <h1 className="text-3xl font-serif font-black text-oxford-blue tracking-tight uppercase">Librarian Portal</h1>
-          <p className="text-charcoal/70 text-xs font-mono font-black uppercase tracking-[0.2em] mt-3">Archival Credential Verification</p>
+          <h1 className="text-3xl font-serif font-black text-oxford-blue tracking-tight uppercase">Cổng Thủ thư</h1>
+          <p className="text-charcoal/70 text-xs font-mono font-black uppercase tracking-[0.2em] mt-3">Xác thực Thông tin Quản trị</p>
         </div>
 
         <div className="space-y-8">
           <div className="space-y-3">
             <label className="text-xs font-mono font-black text-brass uppercase tracking-[0.2em] px-1 flex items-center gap-2">
               <School className="h-3 w-3" />
-              Assigned Campus
+              Cơ sở làm việc
             </label>
             <div className="relative group">
               <GraduationCap className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-oxford-blue/20 group-focus-within:text-brass transition-colors" />
@@ -156,7 +156,7 @@ const Login = () => {
               <div className="grow border-t border-oxford-blue/10"></div>
               <span className="shrink mx-4 text-[10px] font-mono font-black text-charcoal/30 uppercase tracking-widest flex items-center gap-2">
                 <BookOpen className="h-3 w-3" />
-                Staff Authentication
+                Xác thực Nhân viên
               </span>
               <div className="grow border-t border-oxford-blue/10"></div>
             </div>
@@ -177,7 +177,7 @@ const Login = () => {
               {loading ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
-                  <span className="text-xs uppercase font-mono font-black tracking-widest">Verifying Seals...</span>
+                  <span className="text-xs uppercase font-mono font-black tracking-widest">Đang xác thực...</span>
                 </>
               ) : (
                 <>
@@ -199,7 +199,7 @@ const Login = () => {
                       fill="#EA4335"
                     />
                   </svg>
-                  <span className="text-xs uppercase font-mono font-black tracking-widest">Verify with Google</span>
+                  <span className="text-xs uppercase font-mono font-black tracking-widest">Xác thực với Google</span>
                 </>
               )}
             </button>
@@ -209,17 +209,17 @@ const Login = () => {
         <div className="mt-12 text-center border-t border-oxford-blue/5 pt-8">
             <div className="flex items-center justify-center gap-2 mb-4">
               <ShieldCheck className="h-4 w-4 text-brass" />
-              <span className="text-[10px] font-mono font-black text-oxford-blue/40 uppercase tracking-widest">Secure Library Node 0x7F</span>
+              <span className="text-[10px] font-mono font-black text-oxford-blue/40 uppercase tracking-widest">Nút Thư viện Bảo mật 0x7F</span>
             </div>
             <p className="text-charcoal/60 text-[10px] font-mono font-black uppercase tracking-[0.3em] leading-relaxed">
-              Administrative credentials required. Access is monitored by the Archival Governance Board.
+              Yêu cầu quyền quản trị. Quyền truy cập được giám sát chặt chẽ bởi Hệ thống.
             </p>
         </div>
       </div>
       
       {/* Footer Decoration */}
       <div className="absolute bottom-8 text-xs font-mono font-black text-oxford-blue/50 tracking-[0.5em] uppercase">
-        © 2026 Archive Oversight - BookHub Management
+        © 2026 Quản lý BookHub
       </div>
     </div>
   );

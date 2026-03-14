@@ -47,7 +47,7 @@ const AdminLayout = () => {
       console.error('Logout error caught:', error.message || error);
     } finally {
       console.log('AdminLayout: Finalizing logout, navigating to login');
-      enqueueSnackbar('Session terminated. Logged out successfully.', { variant: 'default' });
+      enqueueSnackbar('Đã kết thúc phiên làm việc. Đăng xuất thành công.', { variant: 'default' });
       navigate('/login', { replace: true });
     }
   };
@@ -58,13 +58,13 @@ const AdminLayout = () => {
   };
 
   const menuItems = [
-    { icon: LayoutDashboard, label: 'DASHBOARD', path: '/' },
-    { icon: Calendar, label: 'EVENTS HUB', path: '/events' },
-    { icon: RotateCcw, label: 'CIRCULATION', path: '/circulation' },
-    { icon: BookOpen, label: 'LIBRARY MANAGEMENT', path: '/books' },
-    { icon: Users, label: 'USER MANAGEMENT', path: '/users' },
-    { icon: FileBarChart, label: 'REPORTS & ANALYTICS', path: '/reports' },
-    { icon: Settings, label: 'SYSTEM SETTINGS', path: '/settings' },
+    { icon: LayoutDashboard, label: 'BẢNG ĐIỀU KHIỂN', path: '/' },
+    { icon: Calendar, label: 'QUẢN LÝ SỰ KIỆN', path: '/events' },
+    { icon: RotateCcw, label: 'MƯỢN & TRẢ SÁCH', path: '/circulation' },
+    { icon: BookOpen, label: 'QUẢN LÝ SÁCH', path: '/books' },
+    { icon: Users, label: 'QUẢN LÝ ĐỘC GIẢ', path: '/users' },
+    { icon: FileBarChart, label: 'BÁO CÁO & THỐNG KÊ', path: '/reports' },
+    { icon: Settings, label: 'CÀI ĐẶT HỆ THỐNG', path: '/settings' },
   ];
 
   return (
@@ -79,7 +79,7 @@ const AdminLayout = () => {
             {isExpanded && (
               <div className="flex flex-col animate-in fade-in duration-300">
                 <span className="text-xl font-serif font-black text-parchment tracking-tight leading-none">BOOKHUB</span>
-                <span className="text-[11px] text-brass font-mono font-black tracking-[0.2em] mt-1">ADMIN PANEL</span>
+                <span className="text-[11px] text-brass font-mono font-black tracking-[0.2em] mt-1">QUẢN TRỊ VIÊN</span>
               </div>
             )}
           </Link>
@@ -92,7 +92,7 @@ const AdminLayout = () => {
         </div>
 
         <nav className="flex-1 flex flex-col overflow-y-auto no-scrollbar">
-          {isExpanded && <p className="px-8 text-xs font-black text-parchment/40 tracking-[0.3em] mb-4 uppercase animate-in fade-in duration-300">Main Navigation</p>}
+          {isExpanded && <p className="px-8 text-xs font-black text-parchment/40 tracking-[0.3em] mb-4 uppercase animate-in fade-in duration-300">Menu chính</p>}
           <div className="space-y-1">
             {menuItems.map((item) => (
               <SidebarItem
@@ -109,10 +109,10 @@ const AdminLayout = () => {
           <button
             onClick={handleLogout}
             className={`flex items-center gap-3 px-4 py-3 text-parchment/60 hover:text-red-400 hover:bg-white/5 rounded-md transition-all duration-300 font-mono text-xs font-black uppercase tracking-widest overflow-hidden group/logout cursor-pointer ${isExpanded ? 'w-full' : 'w-auto p-2 justify-center'}`}
-            title="Log out from system"
+            title="Đăng xuất khỏi hệ thống"
           >
             <LogOut className="h-4 w-4 shrink-0 transition-transform group-hover/logout:-translate-x-1" />
-            {isExpanded && <span className="animate-in fade-in duration-300">Terminate Session</span>}
+            {isExpanded && <span className="animate-in fade-in duration-300">Đăng xuất</span>}
           </button>
         </div>
       </aside>
@@ -128,7 +128,7 @@ const AdminLayout = () => {
             <Search className="h-4 w-4 text-oxford-blue/30 group-focus-within:text-brass" />
             <input
               type="text"
-              placeholder="Search library..."
+              placeholder="Tìm kiếm thư viện..."
               className="bg-transparent border-none focus:outline-none text-base text-charcoal px-3 w-full font-serif italic"
             />
           </div>
@@ -140,14 +140,14 @@ const AdminLayout = () => {
             </button>
             <div className="flex items-center gap-4 border-l border-oxford-blue/10 pl-8">
               <div className="text-right">
-                <div className="text-sm font-serif font-black text-oxford-blue leading-none">{profile?.full_name || 'Archivist'}</div>
-                <div className="text-xs text-brass uppercase font-mono font-black tracking-widest mt-1">{profile?.roles?.name || 'Staff'}</div>
+                <div className="text-sm font-serif font-black text-oxford-blue leading-none">{profile?.full_name || 'Thủ thư'}</div>
+                <div className="text-xs text-brass uppercase font-mono font-black tracking-widest mt-1">{profile?.roles?.name || 'Nhân viên'}</div>
               </div>
               <div className="h-12 w-12 rounded-academic bg-parchment flex items-center justify-center border-2 border-brass/50 shadow-md relative group overflow-hidden">
                 {profile?.avatar_url ? (
                   <img src={profile.avatar_url} alt="User Avatar" className="h-full w-full object-cover" />
                 ) : (
-                  <span className="text-oxford-blue font-serif font-black text-lg relative z-10">{getInitials(profile?.full_name || 'Archivist')}</span>
+                  <span className="text-oxford-blue font-serif font-black text-lg relative z-10">{getInitials(profile?.full_name || 'Thủ thư')}</span>
                 )}
                 <div className="absolute inset-0 bg-brass/20 translate-y-full group-hover:translate-y-0 transition-transform"></div>
               </div>
