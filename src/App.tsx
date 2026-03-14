@@ -9,25 +9,29 @@ import Users from './pages/Users';
 import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import Circulation from './pages/Circulation';
+import Borrows from './pages/Borrows';
+import Fines from './pages/Fines';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
-    <SnackbarProvider 
-      maxSnack={3} 
+    <SnackbarProvider
+      maxSnack={3}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       autoHideDuration={3000}
     >
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
-          
+
           {/* Protected Admin Routes - Only ADMIN allowed */}
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<AdminLayout />}>
               <Route index element={<Dashboard />} />
               <Route path="events" element={<Events />} />
               <Route path="books" element={<Books />} />
+              <Route path="borrows" element={<Borrows />} />
+              <Route path="fines" element={<Fines />} />
               <Route path="users" element={<Users />} />
               <Route path="circulation" element={<Circulation />} />
               <Route path="reports" element={<Reports />} />

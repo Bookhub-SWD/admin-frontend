@@ -1,6 +1,6 @@
 import { TrendingUp, GraduationCap, Archive, Newspaper, Library, Loader2 } from 'lucide-react';
-import { 
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
+import {
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, AreaChart, Area
 } from 'recharts';
 import { useState, useEffect } from 'react';
@@ -21,12 +21,12 @@ const Dashboard = () => {
     active_users: 0,
     borrowed_today: 0
   });
-  const [recentActivity, setRecentActivity] = useState<{id: string, user: {name: string}, book: string, action: string, date: string, status: string}[]>([]);
+  const [recentActivity, setRecentActivity] = useState<{ id: string, user: { name: string }, book: string, action: string, date: string, status: string }[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let mounted = true;
-    
+
     // Safety valve: ensure loading screen clears eventually (max 10 seconds)
     const safetyTimeout = setTimeout(() => {
       if (mounted && loading) {
@@ -41,9 +41,9 @@ const Dashboard = () => {
       try {
         const trendsPromise = api.get('/stats/borrowing-trends');
         const statsPromise = api.get('/stats/dashboard');
-        
+
         console.log('Dashboard: Requests initiated, awaiting responses...');
-        
+
         const [trendsRes, statsRes] = await Promise.all([
           trendsPromise.catch(err => {
             console.error('Dashboard: [TRENDS_ERROR]', err.message || err);
@@ -57,15 +57,15 @@ const Dashboard = () => {
 
         if (!mounted) return;
 
-        console.log('Dashboard: [FETCH_COMPLETE]', { 
-          trends_ok: trendsRes.data?.ok, 
-          stats_ok: statsRes.data?.ok 
+        console.log('Dashboard: [FETCH_COMPLETE]', {
+          trends_ok: trendsRes.data?.ok,
+          stats_ok: statsRes.data?.ok
         });
 
         if (trendsRes.data?.ok) {
           setPeakData(trendsRes.data.data);
         }
-        
+
         if (statsRes.data?.ok) {
           setSummaryData(statsRes.data.data.summary);
           if (statsRes.data.data.book_categories) {
@@ -75,7 +75,7 @@ const Dashboard = () => {
             setRecentActivity(statsRes.data.data.recent_activity);
           }
         }
-        
+
         // If we didn't get OK from both (perhaps auth was still linking), 
         // we could optionally retry here, but the safety valve handles the UI freeze.
       } catch (err: any) {
@@ -88,7 +88,7 @@ const Dashboard = () => {
         }
       }
     };
-    
+
     fetchData();
 
     return () => {
@@ -120,10 +120,10 @@ const Dashboard = () => {
         ].map((stat, i) => (
           <div key={i} className="card-academic p-6 border-t-4 border-t-oxford-blue group hover:border-t-brass transition-all duration-500 bg-white">
             <div className="flex items-center justify-between mb-4">
-               <div className="bg-parchment p-3 rounded-academic border border-oxford-blue/5 group-hover:scale-110 transition-transform">
+              <div className="bg-parchment p-3 rounded-academic border border-oxford-blue/5 group-hover:scale-110 transition-transform">
                 <stat.icon className={`h-6 w-6 ${stat.color}`} />
-               </div>
-               <span className="text-[10px] font-mono font-black text-charcoal/50 uppercase tracking-[0.2em]">{stat.label}</span>
+              </div>
+              <span className="text-[10px] font-mono font-black text-charcoal/50 uppercase tracking-[0.2em]">{stat.label}</span>
             </div>
             <div className="text-4xl font-serif font-black text-oxford-blue mb-1">{loading ? '...' : stat.value}</div>
             <div className="text-[10px] font-sans font-bold text-charcoal/70 uppercase tracking-widest">{stat.subtitle}</div>
@@ -147,7 +147,7 @@ const Dashboard = () => {
               <option>Tháng này</option>
             </select>
           </div>
-          
+
           <div className="h-80 w-full relative">
             {loading ? (
               <div className="absolute inset-0 flex items-center justify-center bg-parchment/10 backdrop-blur-[2px] z-10">
@@ -161,29 +161,29 @@ const Dashboard = () => {
                 <AreaChart data={peakData}>
                   <defs>
                     <linearGradient id="colorLoan" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#002147" stopOpacity={0.1}/>
-                      <stop offset="95%" stopColor="#002147" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#002147" stopOpacity={0.1} />
+                      <stop offset="95%" stopColor="#002147" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#00000008" vertical={false} />
-                  <XAxis 
-                    dataKey="name" 
-                    stroke="#002147" 
-                    fontSize={10} 
+                  <XAxis
+                    dataKey="name"
+                    stroke="#002147"
+                    fontSize={10}
                     fontWeight="bold"
                     axisLine={false}
                     tickLine={false}
                     dy={10}
                   />
-                  <YAxis 
-                    stroke="#002147" 
-                    fontSize={10} 
+                  <YAxis
+                    stroke="#002147"
+                    fontSize={10}
                     fontWeight="bold"
                     axisLine={false}
                     tickLine={false}
                     dx={-10}
                   />
-                  <Tooltip 
+                  <Tooltip
                     contentStyle={{ backgroundColor: '#FCFBF7', border: '1px solid #00214710', borderRadius: '2px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}
                     labelStyle={{ fontFamily: 'serif', fontWeight: 'bold', color: '#002147' }}
                   />
@@ -220,8 +220,8 @@ const Dashboard = () => {
                     <Cell key={`cell-${index}`} fill={entry.color || SCHOLARLY_COLORS[index % SCHOLARLY_COLORS.length]} />
                   )) : <Cell fill="#e2e8f0" />}
                 </Pie>
-                <Tooltip 
-                   contentStyle={{ backgroundColor: '#FCFBF7', border: '1px solid #00214710', borderRadius: '2px' }}
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#FCFBF7', border: '1px solid #00214710', borderRadius: '2px' }}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -234,18 +234,18 @@ const Dashboard = () => {
           </div>
 
           <div className="mt-8 space-y-3">
-             {categoryData.map((item, i) => (
-               <div key={i} className="flex justify-between items-center text-xs font-mono font-black uppercase tracking-widest">
-                 <div className="flex items-center gap-2">
-                   <div className="h-2 w-2" style={{ backgroundColor: item.color || SCHOLARLY_COLORS[i % SCHOLARLY_COLORS.length] }}></div>
-                   <span className="text-charcoal/80 font-bold max-w-[150px] truncate" title={item.name}>{item.name}</span>
-                 </div>
-                 <span className="text-oxford-blue font-black">{item.count}</span>
-               </div>
-             ))}
-             {!loading && categoryData.length === 0 && (
-                <div className="text-center text-xs text-charcoal/50 italic py-4">Không tìm thấy danh mục.</div>
-             )}
+            {categoryData.map((item, i) => (
+              <div key={i} className="flex justify-between items-center text-xs font-mono font-black uppercase tracking-widest">
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2" style={{ backgroundColor: item.color || SCHOLARLY_COLORS[i % SCHOLARLY_COLORS.length] }}></div>
+                  <span className="text-charcoal/80 font-bold max-w-[150px] truncate" title={item.name}>{item.name}</span>
+                </div>
+                <span className="text-oxford-blue font-black">{item.count}</span>
+              </div>
+            ))}
+            {!loading && categoryData.length === 0 && (
+              <div className="text-center text-xs text-charcoal/50 italic py-4">Không tìm thấy danh mục.</div>
+            )}
           </div>
         </div>
       </div>
@@ -253,59 +253,57 @@ const Dashboard = () => {
       {/* Recent Activity Section */}
       <div className="card-academic p-8 bg-white">
         <h3 className="text-xl font-serif font-bold text-oxford-blue mb-8 uppercase tracking-tight flex items-center gap-2">
-            <Archive className="h-5 w-5 text-brass" />
-            Nhật ký hoạt động
+          <Archive className="h-5 w-5 text-brass" />
+          Nhật ký hoạt động
         </h3>
         <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-                <thead>
-                    <tr className="bg-oxford-blue text-parchment uppercase font-mono text-[10px] font-black tracking-[0.2em]">
-                        <th className="px-6 py-4 border-r border-parchment/10">Thành viên</th>
-                        <th className="px-6 py-4 border-r border-parchment/10">Hành động</th>
-                        <th className="px-6 py-4 border-r border-parchment/10">Tài liệu</th>
-                        <th className="px-6 py-4 border-r border-parchment/10 font-black">Thời gian</th>
-                        <th className="px-6 py-4 text-right">Trạng thái</th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-oxford-blue/5">
-                    {loading ? (
-                        <tr><td colSpan={5} className="p-10 text-center animate-pulse font-mono text-xs uppercase tracking-widest text-oxford-blue/40">Đang truy xuất dữ liệu...</td></tr>
-                    ) : recentActivity.length === 0 ? (
-                        <tr><td colSpan={5} className="p-10 text-center font-serif italic text-charcoal/30">Không có giao dịch gần đây.</td></tr>
-                    ) : (
-                        recentActivity.map((act) => (
-                            <tr key={act.id} className="hover:bg-parchment/30 transition-colors">
-                                <td className="px-6 py-4 border-r border-oxford-blue/5">
-                                    <div className="text-sm font-serif font-black text-oxford-blue">{act.user.name}</div>
-                                </td>
-                                <td className="px-6 py-4 border-r border-oxford-blue/5">
-                                    <span className={`text-[10px] font-mono font-black uppercase tracking-widest px-2 py-0.5 rounded-sm ${
-                                        act.action === 'Return' ? 'bg-green-100 text-green-700' : 
-                                        act.action === 'Borrow' ? 'bg-blue-100 text-blue-700' : 
-                                        'bg-brass/10 text-brass'
-                                    }`}>
-                                        {act.action}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 border-r border-oxford-blue/5">
-                                    <div className="text-xs font-sans font-bold text-oxford-blue/80 italic line-clamp-1">{act.book}</div>
-                                </td>
-                                <td className="px-6 py-4 border-r border-oxford-blue/5">
-                                    <div className="text-[10px] font-mono font-black text-charcoal/60 uppercase">{act.date}</div>
-                                </td>
-                                <td className="px-6 py-4 text-right">
-                                    <span className={`text-[10px] font-mono font-black uppercase tracking-widest ${
-                                        act.status === 'Completed' ? 'text-green-600' : 
-                                        act.status === 'Active' ? 'text-blue-600' : 'text-brass'
-                                    }`}>
-                                        {act.status}
-                                    </span>
-                                </td>
-                            </tr>
-                        ))
-                    )}
-                </tbody>
-            </table>
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-oxford-blue text-parchment uppercase font-mono text-[10px] font-black tracking-[0.2em]">
+                <th className="px-6 py-4 border-r border-parchment/10">Thành viên</th>
+                <th className="px-6 py-4 border-r border-parchment/10">Hành động</th>
+                <th className="px-6 py-4 border-r border-parchment/10">Tài liệu</th>
+                <th className="px-6 py-4 border-r border-parchment/10 font-black">Thời gian</th>
+                <th className="px-6 py-4 text-right">Trạng thái</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-oxford-blue/5">
+              {loading ? (
+                <tr><td colSpan={5} className="p-10 text-center animate-pulse font-mono text-xs uppercase tracking-widest text-oxford-blue/40">Đang truy xuất dữ liệu...</td></tr>
+              ) : recentActivity.length === 0 ? (
+                <tr><td colSpan={5} className="p-10 text-center font-serif italic text-charcoal/30">Không có giao dịch gần đây.</td></tr>
+              ) : (
+                recentActivity.map((act) => (
+                  <tr key={act.id} className="hover:bg-parchment/30 transition-colors">
+                    <td className="px-6 py-4 border-r border-oxford-blue/5">
+                      <div className="text-sm font-serif font-black text-oxford-blue">{act.user.name}</div>
+                    </td>
+                    <td className="px-6 py-4 border-r border-oxford-blue/5">
+                      <span className={`text-[10px] font-mono font-black uppercase tracking-widest px-2 py-0.5 rounded-sm ${act.action === 'Return' ? 'bg-green-100 text-green-700' :
+                        act.action === 'Borrow' ? 'bg-blue-100 text-blue-700' :
+                          'bg-brass/10 text-brass'
+                        }`}>
+                        {act.action}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 border-r border-oxford-blue/5">
+                      <div className="text-xs font-sans font-bold text-oxford-blue/80 italic line-clamp-1">{act.book}</div>
+                    </td>
+                    <td className="px-6 py-4 border-r border-oxford-blue/5">
+                      <div className="text-[10px] font-mono font-black text-charcoal/60 uppercase">{act.date}</div>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <span className={`text-[10px] font-mono font-black uppercase tracking-widest ${act.status === 'Completed' ? 'text-green-600' :
+                        act.status === 'Active' ? 'text-blue-600' : 'text-brass'
+                        }`}>
+                        {act.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

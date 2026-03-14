@@ -23,13 +23,13 @@ const Books = () => {
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isCopiesModalOpen, setIsCopiesModalOpen] = useState(false);
-  const [selectedBook, setSelectedBook] = useState<{id: string, title: string} | null>(null);
+  const [selectedBook, setSelectedBook] = useState<{ id: string, title: string } | null>(null);
   const [totalItems, setTotalItems] = useState(0);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
   const [subject, setSubject] = useState('');
   const [categories, setCategories] = useState<string[]>([]);
-  const [subjects, setSubjects] = useState<{id: number, name: string}[]>([]);
+  const [subjects, setSubjects] = useState<{ id: number, name: string }[]>([]);
 
   const fetchFilters = async () => {
     try {
@@ -47,13 +47,13 @@ const Books = () => {
   const fetchData = async (query = '', cat = '', sub = '') => {
     setLoading(true);
     try {
-      const res = await api.get('/books', { 
-        params: { 
+      const res = await api.get('/books', {
+        params: {
           limit: 10,
           search: query,
           category: cat,
           subject_id: sub
-        } 
+        }
       });
       if (res.data.ok) {
         setBooks(res.data.data);
@@ -73,7 +73,7 @@ const Books = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-        fetchData(search, category, subject);
+      fetchData(search, category, subject);
     }, 500);
     return () => clearTimeout(timer);
   }, [search, category, subject]);
@@ -87,13 +87,13 @@ const Books = () => {
           <p className="text-charcoal/70 font-sans font-medium italic">Quản lý kho sách, trạng thái và tài sản thư viện.</p>
         </div>
         <div className="flex gap-4">
-          <button 
+          <button
             onClick={() => setIsImportModalOpen(true)}
             className="px-6 py-2 border border-oxford-blue/30 text-oxford-blue font-mono text-xs font-black uppercase tracking-widest hover:bg-oxford-blue/5 transition-colors rounded-academic cursor-pointer"
           >
             Nhập từ Excel
           </button>
-          <button 
+          <button
             onClick={() => setIsAddModalOpen(true)}
             className="btn-academic flex items-center gap-2 text-xs cursor-pointer"
           >
@@ -117,45 +117,45 @@ const Books = () => {
           <div className="flex gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-oxford-blue/30" />
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Tìm theo ISBN hoặc Tên sách..." 
+                placeholder="Tìm theo ISBN hoặc Tên sách..."
                 className="bg-white border border-oxford-blue/20 rounded-academic pl-10 pr-4 py-2 text-xs text-charcoal focus:outline-none focus:border-brass/30 w-64 uppercase font-mono font-black tracking-widest"
               />
             </div>
-            
-            <select 
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="bg-white border border-oxford-blue/20 rounded-academic px-4 py-2 text-xs text-charcoal focus:outline-none focus:border-brass/30 font-mono font-black uppercase tracking-widest cursor-pointer appearance-none min-w-[150px]"
+
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="bg-white border border-oxford-blue/20 rounded-academic px-4 py-2 text-xs text-charcoal focus:outline-none focus:border-brass/30 font-mono font-black uppercase tracking-widest cursor-pointer appearance-none min-w-[150px]"
             >
-                <option value="">Tất cả danh mục</option>
-                {categories.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
-                ))}
+              <option value="">Tất cả danh mục</option>
+              {categories.map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
             </select>
 
-            <select 
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                className="bg-white border border-oxford-blue/20 rounded-academic px-4 py-2 text-xs text-charcoal focus:outline-none focus:border-brass/30 font-mono font-black uppercase tracking-widest cursor-pointer appearance-none min-w-[150px]"
+            <select
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              className="bg-white border border-oxford-blue/20 rounded-academic px-4 py-2 text-xs text-charcoal focus:outline-none focus:border-brass/30 font-mono font-black uppercase tracking-widest cursor-pointer appearance-none min-w-[150px]"
             >
-                <option value="">Tất cả chủ đề</option>
-                {subjects.map(sub => (
-                    <option key={sub.id} value={sub.id}>{sub.name}</option>
-                ))}
+              <option value="">Tất cả chủ đề</option>
+              {subjects.map(sub => (
+                <option key={sub.id} value={sub.id}>{sub.name}</option>
+              ))}
             </select>
 
-            <button 
-                onClick={() => {
-                    setSearch('');
-                    setCategory('');
-                    setSubject('');
-                }}
-                className="p-2 border border-oxford-blue/10 rounded-academic text-oxford-blue/40 hover:text-brass transition-colors cursor-pointer"
-                title="Xoá bộ lọc"
+            <button
+              onClick={() => {
+                setSearch('');
+                setCategory('');
+                setSubject('');
+              }}
+              className="p-2 border border-oxford-blue/10 rounded-academic text-oxford-blue/40 hover:text-brass transition-colors cursor-pointer"
+              title="Xoá bộ lọc"
             >
               <Filter className="h-4 w-4" />
             </button>
@@ -202,24 +202,22 @@ const Books = () => {
                   </td>
                   <td className="px-8 py-6 border-r border-oxford-blue/5">
                     <span className="text-xs font-mono font-black text-charcoal/80 uppercase tracking-widest border border-oxford-blue/20 px-2 py-1 rounded-academic">
-                       {book.subjects?.[0]?.subject?.category || 'Chưa phân loại'}
+                      {book.subjects?.[0]?.subject?.category || 'Chưa phân loại'}
                     </span>
                   </td>
                   <td className="px-8 py-6 border-r border-oxford-blue/5">
                     <div className="flex items-center gap-2">
-                      <div className={`h-1.5 w-1.5 rounded-full ${
-                        book.available_copies > 0 ? 'bg-brass shadow-[0_0_8px_var(--color-brass)]' : 'bg-oxford-blue animate-pulse'
-                      }`}></div>
-                      <span className={`text-xs font-mono font-black uppercase tracking-widest ${
-                        book.available_copies > 0 ? 'text-brass' : 'text-oxford-blue/80'
-                      }`}>
+                      <div className={`h-1.5 w-1.5 rounded-full ${book.available_copies > 0 ? 'bg-brass shadow-[0_0_8px_var(--color-brass)]' : 'bg-oxford-blue animate-pulse'
+                        }`}></div>
+                      <span className={`text-xs font-mono font-black uppercase tracking-widest ${book.available_copies > 0 ? 'text-brass' : 'text-oxford-blue/80'
+                        }`}>
                         {book.available_copies > 0 ? 'Còn sách' : 'Đã mượn'} ({book.available_copies}/{book.total_copies})
                       </span>
                     </div>
                   </td>
                   <td className="px-8 py-6 text-right">
                     <div className="flex justify-end gap-2">
-                      <button 
+                      <button
                         title="Quản lý bản sao"
                         onClick={() => {
                           setSelectedBook({ id: book.id, title: book.title });
@@ -231,7 +229,7 @@ const Books = () => {
                       </button>
 
                       <button className="p-2 text-oxford-blue/20 hover:text-brass transition-colors cursor-pointer">
-                          <MoreHorizontal className="h-4 w-4" />
+                        <MoreHorizontal className="h-4 w-4" />
                       </button>
                     </div>
                   </td>
@@ -241,19 +239,19 @@ const Books = () => {
             )}
           </tbody>
         </table>
-        
+
         <div className="p-6 bg-parchment/10 border-t border-oxford-blue/5 flex justify-between items-center text-xs font-mono font-black text-charcoal/60 uppercase tracking-[0.3em]">
           <span>Hiển thị 1-{books.length} trên {totalItems.toLocaleString()} sách</span>
           <div className="flex gap-4">
-            <button 
-              className="p-2 hover:text-oxford-blue disabled:opacity-20 font-black cursor-pointer border border-transparent hover:border-oxford-blue/10 rounded-academic transition-colors" 
+            <button
+              className="p-2 hover:text-oxford-blue disabled:opacity-20 font-black cursor-pointer border border-transparent hover:border-oxford-blue/10 rounded-academic transition-colors"
               disabled
               title="Trang trước"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
-            <button 
-              className="p-2 hover:text-oxford-blue font-black cursor-pointer border border-transparent hover:border-oxford-blue/10 rounded-academic transition-colors" 
+            <button
+              className="p-2 hover:text-oxford-blue font-black cursor-pointer border border-transparent hover:border-oxford-blue/10 rounded-academic transition-colors"
               onClick={() => fetchData()}
               title="Làm mới / Kế tiếp"
             >
@@ -263,16 +261,16 @@ const Books = () => {
         </div>
       </div>
 
-      <ImportExcelModal 
-        isOpen={isImportModalOpen} 
-        onClose={() => setIsImportModalOpen(false)} 
-        onSuccess={fetchData} 
+      <ImportExcelModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onSuccess={fetchData}
       />
 
-      <AddBookModal 
-        isOpen={isAddModalOpen} 
-        onClose={() => setIsAddModalOpen(false)} 
-        onSuccess={fetchData} 
+      <AddBookModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSuccess={fetchData}
       />
 
       {selectedBook && (

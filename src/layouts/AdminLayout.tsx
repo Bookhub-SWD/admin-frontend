@@ -2,7 +2,11 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, BookOpen, Users, FileBarChart,
   Settings, LogOut, Bell, Search, Library, Calendar,
+<<<<<<< HEAD
   ChevronLeft, Menu, RotateCcw
+=======
+  ChevronLeft, Menu, Archive, Award
+>>>>>>> f96168729524d12e798507347e010fddaa19eca7
 } from 'lucide-react';
 import { useState } from 'react';
 import { signOut, type UserProfile } from '../services/auth';
@@ -58,6 +62,7 @@ const AdminLayout = () => {
   };
 
   const menuItems = [
+<<<<<<< HEAD
     { icon: LayoutDashboard, label: 'BẢNG ĐIỀU KHIỂN', path: '/' },
     { icon: Calendar, label: 'QUẢN LÝ SỰ KIỆN', path: '/events' },
     { icon: RotateCcw, label: 'MƯỢN & TRẢ SÁCH', path: '/circulation' },
@@ -65,6 +70,16 @@ const AdminLayout = () => {
     { icon: Users, label: 'QUẢN LÝ ĐỘC GIẢ', path: '/users' },
     { icon: FileBarChart, label: 'BÁO CÁO & THỐNG KÊ', path: '/reports' },
     { icon: Settings, label: 'CÀI ĐẶT HỆ THỐNG', path: '/settings' },
+=======
+    { icon: LayoutDashboard, label: 'DASHBOARD', path: '/' },
+    { icon: Calendar, label: 'EVENTS HUB', path: '/events' },
+    { icon: BookOpen, label: 'LIBRARY MANAGEMENT', path: '/books' },
+    { icon: Archive, label: 'BORROW RECORDS', path: '/borrows' },
+    { icon: Award, label: 'FINES & PAYMENTS', path: '/fines' },
+    { icon: Users, label: 'USER MANAGEMENT', path: '/users' },
+    { icon: FileBarChart, label: 'REPORTS & ANALYTICS', path: '/reports' },
+    { icon: Settings, label: 'SYSTEM SETTINGS', path: '/settings' },
+>>>>>>> f96168729524d12e798507347e010fddaa19eca7
   ];
 
   return (
