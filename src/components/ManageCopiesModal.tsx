@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2, Edit2, Check, Loader2, Barcode, ShieldCheck } from 'lucide-react';
 import api from '../services/api';
 import { useSnackbar } from 'notistack';
+import ConfirmModal from './ConfirmModal';
 
 interface ManageCopiesModalProps {
   isOpen: boolean;
@@ -33,6 +34,8 @@ const ManageCopiesModal: React.FC<ManageCopiesModalProps> = ({ isOpen, onClose, 
   // Edit Copy State
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editData, setEditData] = useState<Partial<Copy>>({});
+
+  const [deleteConfirm, setDeleteConfirm] = useState<{isOpen: boolean, id: string}>({isOpen: false, id: ''});
 
   useEffect(() => {
     if (isOpen && bookId) {
@@ -96,8 +99,13 @@ const ManageCopiesModal: React.FC<ManageCopiesModalProps> = ({ isOpen, onClose, 
     }
   };
 
-  const handleDeleteCopy = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this copy?')) return;
+  const handleDeleteCopyConfirm = (id: string) => {
+    setDeleteConfirm({ isOpen: true, id });
+  };
+
+  const executeDeleteCopy = async () => {
+    const { id } = deleteConfirm;
+    setDeleteConfirm({ isOpen: false, id: '' });
     setActionLoading(id);
     try {
       const res = await api.delete(`/copies/${id}`);
@@ -280,7 +288,7 @@ const ManageCopiesModal: React.FC<ManageCopiesModalProps> = ({ isOpen, onClose, 
                             </button>
                           )}
                           <button 
-                            onClick={() => handleDeleteCopy(copy.id)}
+                            onClick={() => handleDeleteCopyConfirm(copy.id)}
                             disabled={actionLoading === copy.id}
                             className="text-oxford-blue/30 hover:text-red-500 transition-colors"
                           >
@@ -295,6 +303,14 @@ const ManageCopiesModal: React.FC<ManageCopiesModalProps> = ({ isOpen, onClose, 
             </table>
           </div>
         </div>
+
+        <ConfirmModal
+          isOpen={deleteConfirm.isOpen}
+          onClose={() => setDeleteConfirm({ isOpen: false, id: '' })}
+          onConfirm={executeDeleteCopy}
+          title="Xóa bản sao"
+          message="Bạn có chắc chắn muốn xóa bản sao này không?"
+        />
 
         {/* Footer */}
         <div className="p-6 border-t border-oxford-blue/10 flex justify-end items-center bg-white/50">

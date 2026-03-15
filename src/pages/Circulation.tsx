@@ -245,7 +245,7 @@ const Circulation = () => {
                                 item.status === 'returned' ? 'bg-green-50 text-green-700 border border-green-100' :
                                 'bg-oxford-blue/5 text-oxford-blue/60 border border-oxford-blue/10'
                             }`}>
-                                {isOverdue ? 'overdue' : item.status}
+                                {isOverdue ? 'Quá hạn' : item.status === 'borrowed' ? 'Đang mượn' : item.status === 'returned' ? 'Đã trả' : item.status === 'requested' ? 'Yêu cầu' : item.status === 'cancelled' ? 'Đã huỷ' : item.status}
                             </div>
                           </td>
                           <td className="px-8 py-6 text-right">
@@ -283,7 +283,7 @@ const Circulation = () => {
                               <span className={`text-[9px] font-mono font-black uppercase tracking-widest px-2 py-0.5 rounded-sm border ${
                                 item.status === 'paid' ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100 animate-pulse'
                               }`}>
-                                {item.status}
+                                {item.status === 'paid' ? 'Đã nộp' : item.status === 'pending' ? 'Chưa nộp' : item.status}
                               </span>
                            </td>
                            <td className="px-8 py-6 text-right">

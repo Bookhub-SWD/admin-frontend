@@ -1,8 +1,8 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, BookOpen, Users, FileBarChart,
-  Settings, LogOut, Bell, Search, Library, Calendar,
-  ChevronLeft, Menu, RotateCcw, Archive, Award
+  Settings, LogOut, Search, Library, Calendar,
+  ChevronLeft, Menu, RotateCcw, Banknote
 } from 'lucide-react';
 import { useState } from 'react';
 import { signOut, type UserProfile } from '../services/auth';
@@ -61,8 +61,9 @@ const AdminLayout = () => {
     { icon: LayoutDashboard, label: 'BẢNG ĐIỀU KHIỂN', path: '/' },
     { icon: Calendar, label: 'QUẢN LÝ SỰ KIỆN', path: '/events' },
     { icon: RotateCcw, label: 'MƯỢN & TRẢ SÁCH', path: '/circulation' },
+    { icon: Banknote, label: 'QUẢN LÝ TIỀN PHẠT', path: '/fines' },
     { icon: BookOpen, label: 'QUẢN LÝ SÁCH', path: '/books' },
-    { icon: Users, label: 'QUẢN LÝ ĐỘC GIẢ', path: '/users' },
+    { icon: Users, label: 'QUẢN LÝ NGƯỜI DÙNG', path: '/users' },
     { icon: FileBarChart, label: 'BÁO CÁO & THỐNG KÊ', path: '/reports' },
     { icon: Settings, label: 'CÀI ĐẶT HỆ THỐNG', path: '/settings' },
   ];
@@ -134,10 +135,6 @@ const AdminLayout = () => {
           </div>
 
           <div className="flex items-center gap-8">
-            <button className="relative text-oxford-blue/40 hover:text-oxford-blue transition-colors p-2 cursor-pointer">
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-2 right-2 h-1.5 w-1.5 bg-brass rounded-full"></span>
-            </button>
             <div className="flex items-center gap-4 border-l border-oxford-blue/10 pl-8">
               <div className="text-right">
                 <div className="text-sm font-serif font-black text-oxford-blue leading-none">{profile?.full_name || 'Thủ thư'}</div>

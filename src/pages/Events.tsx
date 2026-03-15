@@ -8,6 +8,7 @@ import api from '../services/api';
 import { useSnackbar } from 'notistack';
 import EventModal from '../components/EventModal';
 import EventDetailModal from '../components/EventDetailModal';
+import ConfirmModal from '../components/ConfirmModal';
 import type { Event } from '../types/event';
 
 
@@ -20,6 +21,7 @@ const Events = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [selectedDetailEvent, setSelectedDetailEvent] = useState<Event | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{isOpen: boolean, id: string}>({isOpen: false, id: ''});
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [pagination, setPagination] = useState({
@@ -59,8 +61,13 @@ const Events = () => {
     return () => clearTimeout(timer);
   }, [search, statusFilter, fetchEvents]);
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xoá sự kiện này không?')) return;
+  const handleDeleteConfirm = (id: string) => {
+    setDeleteConfirm({ isOpen: true, id });
+  };
+
+  const executeDelete = async () => {
+    const { id } = deleteConfirm;
+    setDeleteConfirm({ isOpen: false, id: '' });
     try {
       const res = await api.delete(`/events/${id}`);
       if (res.data.ok) {
@@ -206,7 +213,7 @@ const Events = () => {
                                         <Edit3 className="h-4 w-4" />
                                     </button>
                                     <button 
-                                        onClick={() => handleDelete(eventIdStr)}
+                                        onClick={() => handleDeleteConfirm(eventIdStr)}
                                         className="p-2 text-red-200 hover:text-red-500 transition-colors cursor-pointer"
                                         title="Xoá sự kiện"
                                     >
@@ -270,6 +277,14 @@ const Events = () => {
         onClose={() => setShowModal(false)}
         onSuccess={() => fetchEvents(pagination.current_page, search, statusFilter)}
         event={selectedEvent}
+      />
+
+      <ConfirmModal
+        isOpen={deleteConfirm.isOpen}
+        onClose={() => setDeleteConfirm({ isOpen: false, id: '' })}
+        onConfirm={executeDelete}
+        title="Xác nhận xóa"
+        message="Bạn có chắc chắn muốn xoá sự kiện này không? Các dữ liệu liên quan cũng sẽ bị xóa."
       />
 
       <EventDetailModal 

@@ -1,9 +1,12 @@
-import { Plus, Search, Filter, MoreHorizontal, BookMarked, Layers, User, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Search, Filter, BookMarked, Layers, User, Loader2, ChevronLeft, ChevronRight, Edit3, Trash2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import ImportExcelModal from '../components/ImportExcelModal';
 import AddBookModal from '../components/AddBookModal';
+import EditBookModal from '../components/EditBookModal';
 import ManageCopiesModal from '../components/ManageCopiesModal';
+import ConfirmModal from '../components/ConfirmModal';
+import { useSnackbar } from 'notistack';
 
 
 
@@ -18,12 +21,16 @@ interface Book {
 }
 
 const Books = () => {
+  const { enqueueSnackbar } = useSnackbar();
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isCopiesModalOpen, setIsCopiesModalOpen] = useState(false);
   const [selectedBook, setSelectedBook] = useState<{ id: string, title: string } | null>(null);
+  const [selectedEditBook, setSelectedEditBook] = useState<Book | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{isOpen: boolean, id: string, title: string}>({isOpen: false, id: '', title: ''});
   const [totalItems, setTotalItems] = useState(0);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
@@ -63,6 +70,25 @@ const Books = () => {
       console.error('Books: Error fetching data', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteBookConfirm = (id: string, title: string) => {
+    setDeleteConfirm({ isOpen: true, id, title });
+  };
+
+  const executeDeleteBook = async () => {
+    const { id } = deleteConfirm;
+    setDeleteConfirm({ isOpen: false, id: '', title: '' });
+    try {
+      const res = await api.delete(`/books/${id}`);
+      if (res.data.ok) {
+        enqueueSnackbar('Xóa sách thành công!', { variant: 'success' });
+        fetchData(search, category, subject);
+      }
+    } catch (err: any) {
+      console.error('Books: Error deleting book', err);
+      enqueueSnackbar(err.response?.data?.message || 'Không thể xóa sách', { variant: 'error' });
     }
   };
 
@@ -223,13 +249,28 @@ const Books = () => {
                           setSelectedBook({ id: book.id, title: book.title });
                           setIsCopiesModalOpen(true);
                         }}
-                        className="p-2 text-oxford-blue/20 hover:text-brass transition-colors cursor-pointer border border-transparent hover:border-brass/20 rounded-academic"
+                        className="p-2 text-oxford-blue/60 hover:text-brass transition-colors cursor-pointer border border-transparent hover:border-brass/20 rounded-academic"
                       >
                         <Layers className="h-4 w-4" />
                       </button>
 
-                      <button className="p-2 text-oxford-blue/20 hover:text-brass transition-colors cursor-pointer">
-                        <MoreHorizontal className="h-4 w-4" />
+                      <button 
+                        title="Sửa thông tin"
+                        onClick={() => {
+                          setSelectedEditBook(book);
+                          setIsEditModalOpen(true);
+                        }}
+                        className="p-2 text-oxford-blue/60 hover:text-blue-600 transition-colors cursor-pointer border border-transparent hover:border-blue-600/20 rounded-academic"
+                      >
+                        <Edit3 className="h-4 w-4" />
+                      </button>
+                      
+                      <button 
+                        title="Xóa sách"
+                        onClick={() => handleDeleteBookConfirm(book.id, book.title)}
+                        className="p-2 text-oxford-blue/60 hover:text-red-500 transition-colors cursor-pointer border border-transparent hover:border-red-500/20 rounded-academic"
+                      >
+                        <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
                   </td>
@@ -270,7 +311,28 @@ const Books = () => {
       <AddBookModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        onSuccess={fetchData}
+        onSuccess={() => fetchData(search, category, subject)}
+      />
+
+      {selectedEditBook && (
+        <EditBookModal
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setSelectedEditBook(null);
+          }}
+          onSuccess={() => fetchData(search, category, subject)}
+          bookId={selectedEditBook.id}
+          initialData={selectedEditBook}
+        />
+      )}
+
+      <ConfirmModal
+        isOpen={deleteConfirm.isOpen}
+        onClose={() => setDeleteConfirm({ isOpen: false, id: '', title: '' })}
+        onConfirm={executeDeleteBook}
+        title="Xác nhận xóa"
+        message={`Bạn có chắc chắn muốn xóa sách "${deleteConfirm.title}" không? Hành động này không thể hoàn tác.`}
       />
 
       {selectedBook && (

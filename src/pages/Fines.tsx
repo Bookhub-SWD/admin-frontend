@@ -35,10 +35,10 @@ const Fines = () => {
     <div className="p-10 space-y-10 animate-in fade-in duration-500">
       <div className="flex justify-between items-end border-b border-oxford-blue/10 pb-8">
         <div>
-          <h1 className="text-4xl font-serif font-black text-oxford-blue mb-2 tracking-tight">Fine Controls</h1>
+          <h1 className="text-4xl font-serif font-black text-oxford-blue mb-2 tracking-tight">Quản lý tiền phạt</h1>
           <p className="text-charcoal/70 font-sans font-medium italic">
-            Monitor pending and paid fines for late returns.
-            {statusFilter && <span className="ml-2 font-bold text-red-500 uppercase tracking-widest text-xs">[{statusFilter} FILTER ACTIVE]</span>}
+            Theo dõi các khoản tiền phạt chờ thanh toán và đã thanh toán cho việc trả sách quá hạn.
+            {statusFilter && <span className="ml-2 font-bold text-red-500 uppercase tracking-widest text-xs">[{statusFilter === 'pending' ? 'CHỜ THANH TOÁN' : statusFilter === 'paid' ? 'ĐÃ THANH TOÁN' : statusFilter} ĐANG LỌC]</span>}
           </p>
         </div>
       </div>
@@ -50,7 +50,7 @@ const Fines = () => {
             <div className="flex items-center gap-2 group cursor-pointer">
               <Award className="h-4 w-4 text-brass" />
               <span className="text-xs font-mono font-black text-oxford-blue uppercase tracking-widest border-b border-brass/50">
-                Total Fines: {loading ? '...' : records.length}
+                Tổng số khoản phạt: {loading ? '...' : records.length}
               </span>
             </div>
           </div>
@@ -59,7 +59,7 @@ const Fines = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-oxford-blue/30" />
               <input 
                 type="text" 
-                placeholder="Search..." 
+                placeholder="Tìm kiếm..." 
                 className="bg-white border border-oxford-blue/20 rounded-academic pl-10 pr-4 py-2 text-xs text-charcoal focus:outline-none focus:border-brass/30 w-64 uppercase font-mono font-black tracking-widest"
               />
             </div>
@@ -78,11 +78,11 @@ const Fines = () => {
             <table className="w-full text-left border-collapse relative z-10">
               <thead>
                 <tr className="bg-oxford-blue text-parchment uppercase font-mono text-xs font-black tracking-[0.2em]">
-                  <th className="px-8 py-5 border-r border-parchment/10">User</th>
-                  <th className="px-8 py-5 border-r border-parchment/10">Amount</th>
-                  <th className="px-8 py-5 border-r border-parchment/10">Book info</th>
-                  <th className="px-8 py-5 border-r border-parchment/10">Status</th>
-                  <th className="px-8 py-5 text-right">Actions</th>
+                  <th className="px-8 py-5 border-r border-parchment/10">Người dùng</th>
+                  <th className="px-8 py-5 border-r border-parchment/10">Số tiền (VND)</th>
+                  <th className="px-8 py-5 border-r border-parchment/10">Thông tin sách</th>
+                  <th className="px-8 py-5 border-r border-parchment/10">Trạng thái</th>
+                  <th className="px-8 py-5 text-right">Thao tác</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-oxford-blue/5">
@@ -91,7 +91,7 @@ const Fines = () => {
                     <td className="px-8 py-6 border-r border-oxford-blue/5">
                       <div className="flex items-center gap-2 text-sm font-bold text-oxford-blue">
                         <UserIcon className="h-4 w-4 text-brass" />
-                        {record.user?.full_name || 'Unknown User'}
+                        {record.user?.full_name || 'Người dùng không xác định'}
                       </div>
                       <div className="text-xs font-mono text-charcoal/50 mt-1">{record.user?.email || ''}</div>
                     </td>
@@ -102,11 +102,11 @@ const Fines = () => {
                     </td>
                     <td className="px-8 py-6 border-r border-oxford-blue/5">
                       <div className="text-sm font-serif font-bold text-oxford-blue leading-tight mb-1 truncate max-w-[200px]">
-                        {record.borrow_record?.copy?.book?.title || 'Unknown Book'}
+                        {record.borrow_record?.copy?.book?.title || 'Sách không xác định'}
                       </div>
                       <div className="text-xs font-mono font-black text-charcoal/50 uppercase tracking-widest flex items-center gap-2 mt-2">
                         <Calendar className="h-3 w-3" />
-                        Added: {record.created_at ? new Date(record.created_at).toLocaleDateString() : 'N/A'}
+                        Ngày tạo: {record.created_at ? new Date(record.created_at).toLocaleDateString('vi-VN') : 'N/A'}
                       </div>
                     </td>
                     <td className="px-8 py-6 border-r border-oxford-blue/5">
@@ -115,7 +115,7 @@ const Fines = () => {
                         record.status === 'paid' ? 'bg-green-500/10 border-green-500 text-green-600' :
                         'bg-oxford-blue/10 border-oxford-blue text-oxford-blue'
                       }`}>
-                        {record.status}
+                        {record.status === 'pending' ? 'Chờ thanh toán' : record.status === 'paid' ? 'Đã thanh toán' : record.status}
                       </span>
                     </td>
                     <td className="px-8 py-6 text-right">
@@ -127,7 +127,7 @@ const Fines = () => {
                 )) : (
                   <tr>
                     <td colSpan={5} className="py-12 text-center text-charcoal/40 font-mono text-xs uppercase tracking-widest">
-                      No fines found
+                      Không tìm thấy dữ liệu tiền phạt
                     </td>
                   </tr>
                 )}
