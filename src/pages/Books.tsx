@@ -14,6 +14,7 @@ interface Book {
   id: string;
   title: string;
   author: string;
+  isbn?: string;
   subjects?: { subject: { category: string } }[];
   status?: string;
   total_copies: number;
@@ -28,7 +29,7 @@ const Books = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isCopiesModalOpen, setIsCopiesModalOpen] = useState(false);
-  const [selectedBook, setSelectedBook] = useState<{ id: string, title: string } | null>(null);
+  const [selectedBook, setSelectedBook] = useState<{ id: string, title: string, isbn?: string } | null>(null);
   const [selectedEditBook, setSelectedEditBook] = useState<Book | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{isOpen: boolean, id: string, title: string}>({isOpen: false, id: '', title: ''});
   const [totalItems, setTotalItems] = useState(0);
@@ -246,7 +247,7 @@ const Books = () => {
                       <button
                         title="Quản lý bản sao"
                         onClick={() => {
-                          setSelectedBook({ id: book.id, title: book.title });
+                          setSelectedBook({ id: book.id, title: book.title, isbn: book.isbn });
                           setIsCopiesModalOpen(true);
                         }}
                         className="p-2 text-oxford-blue/60 hover:text-brass transition-colors cursor-pointer border border-transparent hover:border-brass/20 rounded-academic"
@@ -344,6 +345,7 @@ const Books = () => {
           }}
           bookId={selectedBook.id}
           bookTitle={selectedBook.title}
+          bookIsbn={selectedBook.isbn}
         />
       )}
 

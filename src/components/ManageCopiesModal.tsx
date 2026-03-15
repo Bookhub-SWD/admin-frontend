@@ -9,6 +9,7 @@ interface ManageCopiesModalProps {
   onClose: () => void;
   bookId: string;
   bookTitle: string;
+  bookIsbn?: string;
 }
 
 interface Copy {
@@ -18,7 +19,7 @@ interface Copy {
   condition: string;
 }
 
-const ManageCopiesModal: React.FC<ManageCopiesModalProps> = ({ isOpen, onClose, bookId, bookTitle }) => {
+const ManageCopiesModal: React.FC<ManageCopiesModalProps> = ({ isOpen, onClose, bookId, bookTitle, bookIsbn }) => {
   const { enqueueSnackbar } = useSnackbar();
   const [copies, setCopies] = useState<Copy[]>([]);
   const [loading, setLoading] = useState(false);
@@ -58,26 +59,32 @@ const ManageCopiesModal: React.FC<ManageCopiesModalProps> = ({ isOpen, onClose, 
     }
   };
 
+  const generateBarcode = () => {
+    // Standard: {isbn}-{seq}-{4 alphanumeric} e.g. 9786041234561-03-A7K2
+    const isbnBase = bookIsbn ? String(bookIsbn) : bookId.substring(0, 8);
+    const seq = String(copies.length + 1).padStart(2, '0');
+    const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
+    setNewCopy(prev => ({ ...prev, barcode: `${isbnBase}-${seq}-${rand}` }));
+  };
+
   const handleCreateCopy = async () => {
-    if (!newCopy.barcode) {
-      enqueueSnackbar('Barcode is required', { variant: 'warning' });
-      return;
-    }
+    // Auto-generate barcode if empty
+    const barcode = newCopy.barcode || `BC-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
     setActionLoading('create');
     try {
       const res = await api.post('/copies', {
         book_id: bookId,
-        barcode: newCopy.barcode,
+        barcode,
         condition: newCopy.condition
       });
       if (res.data.ok) {
-        enqueueSnackbar('Copy added successfully', { variant: 'success' });
+        enqueueSnackbar('Thêm bản sao thành công!', { variant: 'success' });
         setIsAdding(false);
         setNewCopy({ barcode: '', condition: 'New' });
         fetchCopies();
       }
     } catch (err: any) {
-      enqueueSnackbar(err.response?.data?.message || 'Failed to add copy', { variant: 'error' });
+      enqueueSnackbar(err.response?.data?.message || 'Thêm bản sao thất bại', { variant: 'error' });
     } finally {
       setActionLoading(null);
     }
@@ -153,26 +160,36 @@ const ManageCopiesModal: React.FC<ManageCopiesModalProps> = ({ isOpen, onClose, 
           {isAdding && (
             <div className="p-4 bg-white/50 rounded-academic border border-brass/20 animate-in slide-in-from-top-2 duration-300 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-1">
-                <label className="text-[9px] font-mono font-black text-oxford-blue/60 uppercase">Barcode</label>
-                <input 
-                  value={newCopy.barcode}
-                  onChange={(e) => setNewCopy({...newCopy, barcode: e.target.value})}
-                  className="w-full bg-white border border-oxford-blue/20 rounded-academic px-3 py-2 text-xs font-mono font-black uppercase text-brass focus:outline-none focus:border-brass/30"
-                  placeholder="BC-000000"
-                />
+                <label className="text-[9px] font-mono font-black text-oxford-blue/60 uppercase">Mã Barcode <span className="text-charcoal/30">(để trống = tự động)</span></label>
+                <div className="flex gap-2">
+                  <input 
+                    value={newCopy.barcode}
+                    onChange={(e) => setNewCopy({...newCopy, barcode: e.target.value})}
+                    className="flex-1 bg-white border border-oxford-blue/20 rounded-academic px-3 py-2 text-xs font-mono font-black uppercase text-brass focus:outline-none focus:border-brass/30"
+                    placeholder="BC-XXXXXXXX"
+                  />
+                  <button
+                    type="button"
+                    onClick={generateBarcode}
+                    className="px-2 py-1 border border-oxford-blue/20 rounded-academic text-[9px] font-mono font-black text-oxford-blue/50 hover:text-brass hover:border-brass/30 transition-colors cursor-pointer whitespace-nowrap"
+                    title="Tạo barcode ngẫu nhiên"
+                  >
+                    Tự động
+                  </button>
+                </div>
               </div>
               <div className="space-y-1">
-                <label className="text-[9px] font-mono font-black text-oxford-blue/60 uppercase">Condition</label>
+                <label className="text-[9px] font-mono font-black text-oxford-blue/60 uppercase">Tình trạng</label>
                 <select 
                   value={newCopy.condition}
                   onChange={(e) => setNewCopy({...newCopy, condition: e.target.value})}
                   className="w-full bg-white border border-oxford-blue/20 rounded-academic px-3 py-2 text-xs font-mono font-black uppercase text-oxford-blue focus:outline-none"
                 >
-                  <option value="New">New</option>
-                  <option value="Excellent">Excellent</option>
-                  <option value="Good">Good</option>
-                  <option value="Fair">Fair</option>
-                  <option value="Poor">Poor</option>
+                  <option value="New">Mới</option>
+                  <option value="Excellent">Rất tốt</option>
+                  <option value="Good">Tốt</option>
+                  <option value="Fair">Khá</option>
+                  <option value="Poor">Cũ</option>
                 </select>
               </div>
               <div className="flex items-end">
@@ -182,7 +199,7 @@ const ManageCopiesModal: React.FC<ManageCopiesModalProps> = ({ isOpen, onClose, 
                   className="btn-academic text-[10px] w-full py-2 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {actionLoading === 'create' ? <Loader2 className="h-3 w-3 animate-spin" /> : <ShieldCheck className="h-3 w-3" />}
-                  Register Copy
+                  Thêm Bản Sao
                 </button>
               </div>
             </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { 
   RotateCcw, Search, BookOpen, AlertCircle, 
-  CreditCard, CheckCircle2, MoreVertical, User, 
+  CreditCard, CheckCircle2, User, 
   Loader2, Calendar, Timer
 } from 'lucide-react';
 import api from '../services/api';
@@ -55,18 +55,6 @@ const Circulation = () => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-
-  const handlePayFine = async (fineId: string) => {
-    try {
-      const res = await api.post(`/payments/${fineId}/pay`);
-      if (res.data.ok) {
-        enqueueSnackbar('Thanh toán thành công', { variant: 'success' });
-        fetchData();
-      }
-    } catch (err: any) {
-      enqueueSnackbar(err.response?.data?.message || 'Giao dịch thất bại', { variant: 'error' });
-    }
-  };
 
   const filteredLoans = records.filter(r => {
     const matchesSearch = 
@@ -184,14 +172,13 @@ const Circulation = () => {
               <tr className="bg-oxford-blue text-parchment uppercase font-mono text-[10px] font-black tracking-[0.2em]">
                 <th className="px-8 py-5 border-r border-parchment/10">{viewMode === 'loans' ? 'Người mượn & Sách' : 'Chi tiết Phạt'}</th>
                 <th className="px-8 py-5 border-r border-parchment/10">{viewMode === 'loans' ? 'Thời hạn mượn' : 'Giao dịch mượn'}</th>
-                <th className="px-8 py-5 border-r border-parchment/10">Trạng thái</th>
-                <th className="px-8 py-5 text-right">Thao tác</th>
+                <th className="px-8 py-5">Trạng thái</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-oxford-blue/5">
               {loading ? (
                 <tr>
-                   <td colSpan={4} className="px-8 py-20 text-center">
+                   <td colSpan={3} className="px-8 py-20 text-center">
                     <div className="flex flex-col items-center gap-4">
                       <Loader2 className="h-8 w-8 text-oxford-blue animate-spin" />
                       <span className="text-xs font-mono font-black text-oxford-blue/40 uppercase tracking-[0.3em]">Đang truy xuất dữ liệu...</span>
@@ -200,7 +187,7 @@ const Circulation = () => {
                 </tr>
               ) : (viewMode === 'loans' ? filteredLoans : filteredFines).length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-8 py-20 text-center font-mono font-black text-charcoal/40 uppercase italic tracking-widest text-[10px]">
+                  <td colSpan={3} className="px-8 py-20 text-center font-mono font-black text-charcoal/40 uppercase italic tracking-widest text-[10px]">
                     Không tìm thấy dữ liệu phù hợp.
                   </td>
                 </tr>
@@ -248,11 +235,7 @@ const Circulation = () => {
                                 {isOverdue ? 'Quá hạn' : item.status === 'borrowed' ? 'Đang mượn' : item.status === 'returned' ? 'Đã trả' : item.status === 'requested' ? 'Yêu cầu' : item.status === 'cancelled' ? 'Đã huỷ' : item.status}
                             </div>
                           </td>
-                          <td className="px-8 py-6 text-right">
-                             <button className="p-2 text-oxford-blue/20 hover:text-brass transition-colors cursor-pointer">
-                                <MoreVertical className="h-4 w-4" />
-                             </button>
-                          </td>
+
                         </tr>
                     );
                   } else {
@@ -286,16 +269,7 @@ const Circulation = () => {
                                 {item.status === 'paid' ? 'Đã nộp' : item.status === 'pending' ? 'Chưa nộp' : item.status}
                               </span>
                            </td>
-                           <td className="px-8 py-6 text-right">
-                              {item.status === 'pending' && (
-                                <button 
-                                    onClick={() => handlePayFine(item.id)}
-                                    className="px-4 py-1.5 bg-oxford-blue text-parchment font-mono text-[9px] font-black uppercase tracking-widest rounded-academic hover:bg-brass transition-colors cursor-pointer active:scale-95 shadow-sm"
-                                >
-                                    Nộp phạt
-                                </button>
-                              )}
-                           </td>
+
                         </tr>
                     );
                   }
