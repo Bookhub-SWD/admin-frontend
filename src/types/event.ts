@@ -9,6 +9,7 @@ export interface Event {
   banner_url?: string;
   image_url?: string; // mapping fallback for display
   code?: string;
+  max_participants?: number;
   registered_count?: number;
   attended_count?: number;
   _count?: {

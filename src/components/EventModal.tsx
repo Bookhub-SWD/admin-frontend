@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, Loader2, Calendar, MapPin, AlignLeft, Globe, QrCode } from 'lucide-react';
+import { X, Save, Loader2, Calendar, MapPin, AlignLeft, Globe, QrCode, Users } from 'lucide-react';
 import api from '../services/api';
 import { useSnackbar } from 'notistack';
 import type { Event } from '../types/event';
@@ -22,7 +22,8 @@ const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, onSuccess, eve
     end_time: '',
     location: '',
     banner_url: '',
-    code: ''
+    code: '',
+    max_participants: 0
   });
 
   useEffect(() => {
@@ -34,6 +35,7 @@ const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, onSuccess, eve
             location: event.location || '',
             banner_url: event.banner_url || '',
             code: event.code || '',
+            max_participants: event.max_participants || 0,
             start_time: event.start_time ? new Date(event.start_time).toISOString().substring(0, 16) : '',
             end_time: event.end_time ? new Date(event.end_time).toISOString().substring(0, 16) : '',
         });
@@ -45,7 +47,8 @@ const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, onSuccess, eve
           end_time: '',
           location: '',
           banner_url: '',
-          code: ''
+          code: '',
+          max_participants: 0
         });
       }
     }
@@ -164,6 +167,8 @@ const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, onSuccess, eve
                   className="w-full bg-white border border-oxford-blue/20 rounded-academic px-4 py-2.5 text-sm text-oxford-blue focus:outline-none focus:border-brass/30 font-serif font-bold"
                 />
              </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
              <div className="space-y-2">
                 <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
                   <QrCode className="h-3.5 w-3.5 text-brass" /> Mã Sự kiện
@@ -174,6 +179,19 @@ const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, onSuccess, eve
                   onChange={handleChange}
                   placeholder="VD: EVT-2024-01"
                   className="w-full bg-white border border-oxford-blue/20 rounded-academic px-4 py-2.5 text-sm text-brass font-mono font-black uppercase tracking-widest"
+                />
+             </div>
+             <div className="space-y-2">
+                <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
+                  <Users className="h-3.5 w-3.5 text-brass" /> Số lượng tối đa
+                </label>
+                <input
+                  type="number"
+                  name="max_participants"
+                  value={formData.max_participants || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, max_participants: parseInt(e.target.value) || 0 }))}
+                  placeholder="VD: 50"
+                  className="w-full bg-white border border-oxford-blue/20 rounded-academic px-4 py-2.5 text-sm text-oxford-blue font-serif font-black"
                 />
              </div>
           </div>

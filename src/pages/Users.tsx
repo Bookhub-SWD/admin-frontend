@@ -30,6 +30,8 @@ const Users = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [stats, setStats] = useState<any>(null);
   const [statsLoading, setStatsLoading] = useState(true);
+  const [roleId, setRoleId] = useState<string>('');
+  const [roles, setRoles] = useState<{id: number, name: string}[]>([]);
   const [pagination, setPagination] = useState({
     current_page: 1,
     total_pages: 1,
@@ -44,6 +46,7 @@ const Users = () => {
         params: {
           page,
           search: query,
+          role_id: roleId,
           limit: pagination.limit
         }
       });
@@ -57,7 +60,7 @@ const Users = () => {
     } finally {
       setLoading(false);
     }
-  }, [enqueueSnackbar, pagination.limit]);
+  }, [enqueueSnackbar, pagination.limit, roleId]);
 
   const fetchStats = useCallback(async () => {
     setStatsLoading(true);
@@ -73,16 +76,28 @@ const Users = () => {
     }
   }, []);
 
+  const fetchRoles = useCallback(async () => {
+    try {
+      const res = await api.get('/users/roles');
+      if (res.data.ok) {
+        setRoles(res.data.data);
+      }
+    } catch (err) {
+      console.error('Users: Error fetching roles', err);
+    }
+  }, []);
+
   useEffect(() => {
     fetchStats();
-  }, [fetchStats]);
+    fetchRoles();
+  }, [fetchStats, fetchRoles]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchUsers(1, search);
     }, 500);
     return () => clearTimeout(timer);
-  }, [search, fetchUsers]);
+  }, [search, roleId, fetchUsers]);
 
   const getRoleStyles = (roleName?: string) => {
     switch (roleName?.toUpperCase()) {
@@ -140,8 +155,20 @@ const Users = () => {
                   className="bg-white border border-oxford-blue/20 rounded-academic pl-10 pr-4 py-3 text-xs text-charcoal focus:outline-none focus:border-brass/30 w-full font-sans font-semibold shadow-sm"
                 />
               </div>
-              <div className="text-[10px] font-mono font-black text-brass uppercase tracking-[0.2em]">
-                Tổng số độc giả: {pagination.total_items}
+              <div className="flex gap-4 items-center">
+                <select 
+                  value={roleId}
+                  onChange={(e) => setRoleId(e.target.value)}
+                  className="bg-white border border-oxford-blue/20 rounded-academic px-4 py-3 text-xs text-charcoal focus:outline-none focus:border-brass/30 font-mono font-black uppercase tracking-widest cursor-pointer shadow-sm appearance-none min-w-[150px]"
+                >
+                  <option value="">Tất cả vai trò</option>
+                  {roles.map(role => (
+                    <option key={role.id} value={role.id}>{role.name}</option>
+                  ))}
+                </select>
+                <div className="text-[10px] font-mono font-black text-brass uppercase tracking-[0.2em]">
+                  Tổng số độc giả: {pagination.total_items}
+                </div>
               </div>
             </div>
 

@@ -7,7 +7,6 @@ import Events from './pages/Events';
 import Books from './pages/Books';
 import Users from './pages/Users';
 import Reports from './pages/Reports';
-import Settings from './pages/Settings';
 import Circulation from './pages/Circulation';
 import Borrows from './pages/Borrows';
 import Fines from './pages/Fines';
@@ -35,7 +34,6 @@ function App() {
               <Route path="users" element={<Users />} />
               <Route path="circulation" element={<Circulation />} />
               <Route path="reports" element={<Reports />} />
-              <Route path="settings" element={<Settings />} />
             </Route>
           </Route>
         </Routes>

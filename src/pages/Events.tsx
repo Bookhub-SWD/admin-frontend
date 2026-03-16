@@ -226,7 +226,10 @@ const Events = () => {
                             <div className="mt-8 flex items-center gap-8 border-t border-oxford-blue/5 pt-6">
                                 <div className="flex items-center gap-3">
                                     <Users className="h-4 w-4 text-oxford-blue/40" />
-                                    <span className="text-sm font-serif font-black text-oxford-blue">{registrants} <span className="text-charcoal/60 font-sans font-medium italic ml-1"> Người đăng ký</span></span>
+                                    <span className="text-sm font-serif font-black text-oxford-blue">
+                                        {registrants} {event.max_participants ? `/ ${event.max_participants}` : ''}
+                                        <span className="text-charcoal/60 font-sans font-medium italic ml-1"> Người đăng ký</span>
+                                    </span>
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <CheckCircle2 className="h-4 w-4 text-brass" />
@@ -235,7 +238,7 @@ const Events = () => {
                                 <div className="flex-1 bg-oxford-blue/5 h-2 rounded-full overflow-hidden shadow-inner">
                                     <div 
                                         className={`h-full bg-brass transition-all duration-1000 ${status === 'Đang diễn ra' ? 'animate-pulse' : ''}`} 
-                                        style={{ width: `${registrants > 0 ? (checkins/registrants) * 100 : 0}%` }}
+                                        style={{ width: `${event.max_participants ? (registrants / event.max_participants) * 100 : (registrants > 0 ? (checkins / registrants) * 100 : 0)}%` }}
                                     ></div>
                                 </div>
                             </div>

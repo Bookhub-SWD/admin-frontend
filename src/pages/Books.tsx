@@ -1,4 +1,4 @@
-import { Plus, Search, Filter, BookMarked, Layers, User, Loader2, ChevronLeft, ChevronRight, Edit3, Trash2 } from 'lucide-react';
+import { Plus, Search, Filter, BookMarked, Layers, User, Loader2, ChevronLeft, ChevronRight, Edit3, Trash2, AlertCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import ImportExcelModal from '../components/ImportExcelModal';
@@ -38,6 +38,7 @@ const Books = () => {
   const [subject, setSubject] = useState('');
   const [categories, setCategories] = useState<string[]>([]);
   const [subjects, setSubjects] = useState<{ id: number, name: string }[]>([]);
+  const [unclassifiedOnly, setUnclassifiedOnly] = useState(false);
 
   const fetchFilters = async () => {
     try {
@@ -60,7 +61,8 @@ const Books = () => {
           limit: 10,
           search: query,
           category: cat,
-          subject_id: sub
+          subject_id: sub,
+          unclassified: unclassifiedOnly
         }
       });
       if (res.data.ok) {
@@ -103,7 +105,7 @@ const Books = () => {
       fetchData(search, category, subject);
     }, 500);
     return () => clearTimeout(timer);
-  }, [search, category, subject]);
+  }, [search, category, subject, unclassifiedOnly]);
 
   return (
     <div className="p-10 space-y-10 animate-in fade-in duration-500">
@@ -119,6 +121,17 @@ const Books = () => {
             className="px-6 py-2 border border-oxford-blue/30 text-oxford-blue font-mono text-xs font-black uppercase tracking-widest hover:bg-oxford-blue/5 transition-colors rounded-academic cursor-pointer"
           >
             Nhập từ Excel
+          </button>
+          <button
+            onClick={() => setUnclassifiedOnly(!unclassifiedOnly)}
+            className={`px-6 py-2 border font-mono text-xs font-black uppercase tracking-widest transition-all rounded-academic cursor-pointer flex items-center gap-2 ${
+              unclassifiedOnly 
+              ? 'bg-brass text-parchment border-brass shadow-md ring-2 ring-brass/20 translate-y-[1px]' 
+              : 'border-oxford-blue/20 text-oxford-blue/60 hover:border-brass/40 hover:text-brass bg-white/50'
+            }`}
+          >
+            <AlertCircle className={`h-4 w-4 ${unclassifiedOnly ? 'text-parchment' : 'text-brass'}`} />
+            {unclassifiedOnly ? 'Sách chưa phân loại' : 'Sách chưa phân loại'}
           </button>
           <button
             onClick={() => setIsAddModalOpen(true)}
@@ -159,8 +172,8 @@ const Books = () => {
               className="bg-white border border-oxford-blue/20 rounded-academic px-4 py-2 text-xs text-charcoal focus:outline-none focus:border-brass/30 font-mono font-black uppercase tracking-widest cursor-pointer appearance-none min-w-[150px]"
             >
               <option value="">Tất cả danh mục</option>
-              {categories.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
+              {categories.map((cat, idx) => (
+                <option key={`cat-${cat}-${idx}`} value={cat}>{cat}</option>
               ))}
             </select>
 
@@ -170,8 +183,8 @@ const Books = () => {
               className="bg-white border border-oxford-blue/20 rounded-academic px-4 py-2 text-xs text-charcoal focus:outline-none focus:border-brass/30 font-mono font-black uppercase tracking-widest cursor-pointer appearance-none min-w-[150px]"
             >
               <option value="">Tất cả chủ đề</option>
-              {subjects.map(sub => (
-                <option key={sub.id} value={sub.id}>{sub.name}</option>
+              {subjects.map((sub, idx) => (
+                <option key={`sub-${sub.id || idx}`} value={sub.id}>{sub.name}</option>
               ))}
             </select>
 
@@ -180,6 +193,7 @@ const Books = () => {
                 setSearch('');
                 setCategory('');
                 setSubject('');
+                setUnclassifiedOnly(false);
               }}
               className="p-2 border border-oxford-blue/10 rounded-academic text-oxford-blue/40 hover:text-brass transition-colors cursor-pointer"
               title="Xoá bộ lọc"
@@ -225,12 +239,19 @@ const Books = () => {
                     </div>
                   </td>
                   <td className="px-8 py-6 border-r border-oxford-blue/5">
-                    <div className="font-mono text-xs font-black text-brass uppercase tracking-widest bg-brass/5 px-2 py-1 rounded-sm inline-block">{book.id}</div>
+                    <div className="font-mono text-xs font-black text-brass uppercase tracking-widest bg-brass/5 px-2 py-1 rounded-sm inline-block">{book.isbn || 'N/A'}</div>
                   </td>
                   <td className="px-8 py-6 border-r border-oxford-blue/5">
-                    <span className="text-xs font-mono font-black text-charcoal/80 uppercase tracking-widest border border-oxford-blue/20 px-2 py-1 rounded-academic">
-                      {book.subjects?.[0]?.subject?.category || 'Chưa phân loại'}
-                    </span>
+                    {book.subjects && book.subjects.length > 0 ? (
+                      <span className="text-xs font-mono font-black text-charcoal/80 uppercase tracking-widest border border-oxford-blue/20 px-2 py-1 rounded-academic">
+                        {book.subjects[0]?.subject?.category || 'Chủ đề khác'}
+                      </span>
+                    ) : (
+                      <div className="flex items-center gap-1.5 px-2 py-1 rounded-academic bg-brass/10 border border-brass/30 animate-in fade-in zoom-in duration-500">
+                        <AlertCircle className="h-3 w-3 text-brass" />
+                        <span className="text-[9px] font-mono font-black text-brass uppercase tracking-widest">Chưa phân loại</span>
+                      </div>
+                    )}
                   </td>
                   <td className="px-8 py-6 border-r border-oxford-blue/5">
                     <div className="flex items-center gap-2">

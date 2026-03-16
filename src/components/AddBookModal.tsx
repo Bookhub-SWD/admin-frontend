@@ -20,6 +20,7 @@ const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onSuccess 
   const [loading, setLoading] = useState(false);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loadingSubjects, setLoadingSubjects] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   const [formData, setFormData] = useState({
     title: '',
@@ -52,9 +53,19 @@ const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onSuccess 
     }
   };
 
+  const categories = Array.from(new Set(subjects.map(s => s.category || 'Chưa phân loại'))).sort();
+  const filteredSubjects = subjects
+    .filter(s => s.category === selectedCategory)
+    .sort((a, b) => (a.name || a.code || '').localeCompare(b.name || b.code || ''));
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCategory(e.target.value);
+    setFormData(prev => ({ ...prev, subject_code: '' }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -70,7 +81,7 @@ const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onSuccess 
 
       const res = await api.post('/books', payload);
       if (res.data.ok) {
-        enqueueSnackbar('Book added successfully!', { variant: 'success' });
+        enqueueSnackbar('Thêm sách thành công!', { variant: 'success' });
         onSuccess();
         onClose();
         setFormData({
@@ -83,12 +94,13 @@ const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onSuccess 
           keyword: '',
           subject_code: '',
         });
+        setSelectedCategory('');
       } else {
-        enqueueSnackbar(res.data.message || 'Failed to add book', { variant: 'error' });
+        enqueueSnackbar(res.data.message || 'Thêm sách thất bại', { variant: 'error' });
       }
     } catch (err: any) {
       console.error('AddBookModal: Error submitting form', err);
-      enqueueSnackbar(err.response?.data?.message || 'Failed to add book', { variant: 'error' });
+      enqueueSnackbar(err.response?.data?.message || 'Thêm sách thất bại', { variant: 'error' });
     } finally {
       setLoading(false);
     }
@@ -102,8 +114,8 @@ const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onSuccess 
         {/* Header */}
         <div className="p-6 border-b border-oxford-blue/10 flex justify-between items-center bg-white/50">
           <div>
-            <h2 className="text-2xl font-serif font-black text-oxford-blue tracking-tight uppercase">New Archive Entry</h2>
-            <p className="text-xs font-mono font-black text-brass uppercase tracking-widest mt-1">Manual Library Registration</p>
+            <h2 className="text-2xl font-serif font-black text-oxford-blue tracking-tight uppercase">Lưu trữ mục mới</h2>
+            <p className="text-xs font-mono font-black text-brass uppercase tracking-widest mt-1">Đăng ký sách mới vào thư viện</p>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-oxford-blue/5 rounded-full transition-colors cursor-pointer">
             <X className="h-6 w-6 text-oxford-blue/40" />
@@ -116,14 +128,14 @@ const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onSuccess 
             {/* Title */}
             <div className="space-y-2">
               <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
-                <Book className="h-3 w-3 text-brass" /> Book Title
+                <Book className="h-3 w-3 text-brass" /> Tên sách
               </label>
               <input
                 required
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                placeholder="The Great Gatsby"
+                placeholder="Ví dụ: Đắc Nhân Tâm"
                 className="w-full bg-white border border-oxford-blue/20 rounded-academic px-4 py-2.5 text-sm text-oxford-blue focus:outline-none focus:border-brass/30 font-serif font-bold shadow-sm"
               />
             </div>
@@ -131,14 +143,14 @@ const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onSuccess 
             {/* Author */}
             <div className="space-y-2">
               <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
-                <User className="h-3 w-3 text-brass" /> Author
+                <User className="h-3 w-3 text-brass" /> Tác giả
               </label>
               <input
                 required
                 name="author"
                 value={formData.author}
                 onChange={handleChange}
-                placeholder="F. Scott Fitzgerald"
+                placeholder="Ví dụ: Dale Carnegie"
                 className="w-full bg-white border border-oxford-blue/20 rounded-academic px-4 py-2.5 text-sm text-oxford-blue focus:outline-none focus:border-brass/30 font-serif font-bold shadow-sm"
               />
             </div>
@@ -146,7 +158,7 @@ const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onSuccess 
             {/* ISBN */}
             <div className="space-y-2">
               <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
-                <Hash className="h-3 w-3 text-brass" /> ISBN No.
+                <Hash className="h-3 w-3 text-brass" /> Mã ISBN
               </label>
               <input
                 required
@@ -161,46 +173,64 @@ const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onSuccess 
             {/* Publisher */}
             <div className="space-y-2">
               <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
-                <GraduationCap className="h-3 w-3 text-brass" /> Publisher
+                <GraduationCap className="h-3 w-3 text-brass" /> Nhà xuất bản
               </label>
               <input
                 name="publisher"
                 value={formData.publisher}
                 onChange={handleChange}
-                placeholder="Charles Scribner's Sons"
+                placeholder="Ví dụ: NXB Trẻ"
                 className="w-full bg-white border border-oxford-blue/20 rounded-academic px-4 py-2.5 text-sm text-oxford-blue focus:outline-none focus:border-brass/30 font-serif font-bold shadow-sm"
               />
             </div>
 
-            {/* Category/Subject */}
+            {/* Category */}
             <div className="space-y-2">
               <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
-                <Tag className="h-3 w-3 text-brass" /> Collection / Subject
+                <Tag className="h-3 w-3 text-brass" /> Thể loại chính
+              </label>
+              <select
+                value={selectedCategory}
+                onChange={handleCategoryChange}
+                className="w-full bg-white border border-oxford-blue/20 rounded-academic px-4 py-2.5 text-sm text-oxford-blue focus:outline-none focus:border-brass/30 font-mono font-black uppercase tracking-tight shadow-sm appearance-none cursor-pointer"
+              >
+                <option value="">Chọn thể loại</option>
+                {categories.map((cat, idx) => (
+                  <option key={`${cat}-${idx}`} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Subject */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
+                <Tag className="h-3 w-3 text-brass" /> Chủ đề chi tiết
               </label>
               <select
                 name="subject_code"
+                disabled={!selectedCategory}
                 value={formData.subject_code}
                 onChange={handleChange}
-                className="w-full bg-white border border-oxford-blue/20 rounded-academic px-4 py-2.5 text-sm text-oxford-blue focus:outline-none focus:border-brass/30 font-mono font-black uppercase tracking-tight shadow-sm appearance-none cursor-pointer"
+                className="w-full bg-white border border-oxford-blue/20 rounded-academic px-4 py-2.5 text-sm text-oxford-blue focus:outline-none focus:border-brass/30 font-mono font-black uppercase tracking-tight shadow-sm appearance-none cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
               >
-                <option value="">Select a Subject</option>
-                {subjects.map(s => (
-                  <option key={s.code} value={s.code}>{s.name} ({s.category})</option>
+                <option value="">{selectedCategory ? 'Chọn chủ đề chi tiết' : 'Vui lòng chọn thể loại trước'}</option>
+                {filteredSubjects.map((s, idx) => (
+                  <option key={`${s.code}-${idx}`} value={s.code}>{s.name} ({s.code})</option>
                 ))}
               </select>
-              {loadingSubjects && <p className="text-[9px] font-mono animate-pulse text-brass">Retrieving subjects...</p>}
+              {loadingSubjects && <p className="text-[9px] font-mono animate-pulse text-brass">Đang tải danh sách...</p>}
             </div>
 
             {/* Keywords */}
             <div className="space-y-2">
               <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
-                <Info className="h-3 w-3 text-brass" /> Keywords (Comma separated)
+                <Info className="h-3 w-3 text-brass" /> Từ khóa (Ngăn cách bằng dấu phẩy)
               </label>
               <input
                 name="keyword"
                 value={formData.keyword}
                 onChange={handleChange}
-                placeholder="classic, fiction, 1920s"
+                placeholder="Ví dụ: kỹ năng sống, thành công, giao tiếp"
                 className="w-full bg-white border border-oxford-blue/20 rounded-academic px-4 py-2.5 text-sm text-oxford-blue focus:outline-none focus:border-brass/30 font-mono font-black shadow-sm"
               />
             </div>
@@ -209,7 +239,7 @@ const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onSuccess 
           {/* Image URL */}
           <div className="space-y-2">
             <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
-              <ImageIcon className="h-3 w-3 text-brass" /> Cover Image URL
+              <ImageIcon className="h-3 w-3 text-brass" /> Đường dẫn ảnh bìa
             </label>
             <input
               name="url_img"
@@ -223,14 +253,14 @@ const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onSuccess 
           {/* Description */}
           <div className="space-y-2">
             <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
-              <Info className="h-3 w-3 text-brass" /> Synopsis / Description
+              <Info className="h-3 w-3 text-brass" /> Tóm tắt nội dung
             </label>
             <textarea
               name="description"
               value={formData.description}
               onChange={handleChange}
               rows={4}
-              placeholder="Enter book description..."
+              placeholder="Nhập phần giới thiệu tóm tắt về sách..."
               className="w-full bg-white border border-oxford-blue/20 rounded-academic px-4 py-2.5 text-sm text-oxford-blue focus:outline-none focus:border-brass/30 font-serif shadow-sm resize-none"
             />
           </div>
@@ -244,7 +274,7 @@ const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onSuccess 
             disabled={loading}
             className="text-xs font-mono font-black text-oxford-blue/60 uppercase tracking-widest hover:text-oxford-blue disabled:opacity-30 cursor-pointer"
           >
-            Cancel Entry
+            Hủy thao tác
           </button>
           <button
             onClick={handleSubmit}
@@ -254,12 +284,12 @@ const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, onSuccess 
             {loading ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Registering...
+                Đang xử lý...
               </>
             ) : (
               <>
                 <Save className="h-4 w-4" />
-                Finalize Registry
+                Hoàn tất đăng ký
               </>
             )}
           </button>

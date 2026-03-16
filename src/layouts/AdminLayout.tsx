@@ -1,7 +1,7 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, BookOpen, Users, FileBarChart,
-  Settings, LogOut, Search, Library, Calendar,
+  LogOut, Library, Calendar,
   ChevronLeft, Menu, RotateCcw, Banknote
 } from 'lucide-react';
 import { useState } from 'react';
@@ -65,7 +65,6 @@ const AdminLayout = () => {
     { icon: BookOpen, label: 'QUẢN LÝ SÁCH', path: '/books' },
     { icon: Users, label: 'QUẢN LÝ NGƯỜI DÙNG', path: '/users' },
     { icon: FileBarChart, label: 'BÁO CÁO & THỐNG KÊ', path: '/reports' },
-    { icon: Settings, label: 'CÀI ĐẶT HỆ THỐNG', path: '/settings' },
   ];
 
   return (
@@ -124,15 +123,7 @@ const AdminLayout = () => {
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
 
         {/* Header */}
-        <header className="h-20 border-b border-oxford-blue/10 flex items-center justify-between px-10 bg-white/80 backdrop-blur-md z-10">
-          <div className="flex items-center bg-parchment border border-oxford-blue/10 rounded-academic px-4 py-2 w-96 group focus-within:border-brass/30 transition-all">
-            <Search className="h-4 w-4 text-oxford-blue/30 group-focus-within:text-brass" />
-            <input
-              type="text"
-              placeholder="Tìm kiếm thư viện..."
-              className="bg-transparent border-none focus:outline-none text-base text-charcoal px-3 w-full font-serif italic"
-            />
-          </div>
+        <header className="h-20 border-b border-oxford-blue/10 flex items-center justify-end px-10 bg-white/80 backdrop-blur-md z-10">
 
           <div className="flex items-center gap-8">
             <div className="flex items-center gap-4 border-l border-oxford-blue/10 pl-8">

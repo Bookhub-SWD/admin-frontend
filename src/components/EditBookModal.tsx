@@ -22,6 +22,7 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, onSucces
   const [loading, setLoading] = useState(false);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loadingSubjects, setLoadingSubjects] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   const [formData, setFormData] = useState({
     title: '',
@@ -38,6 +39,9 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, onSucces
     if (isOpen) {
       fetchSubjects();
       if (initialData) {
+        const initialSubjectCode = initialData.subjects?.[0]?.subject?.code || '';
+        const initialCategory = initialData.subjects?.[0]?.subject?.category || '';
+        
         setFormData({
           title: initialData.title || '',
           author: initialData.author || '',
@@ -46,8 +50,9 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, onSucces
           description: initialData.description || '',
           url_img: initialData.url_img || '',
           keyword: Array.isArray(initialData.keyword) ? initialData.keyword.join(', ') : (initialData.keyword || ''),
-          subject_code: initialData.subjects?.[0]?.subject?.code || '',
+          subject_code: initialSubjectCode,
         });
+        setSelectedCategory(initialCategory);
       }
     }
   }, [isOpen, initialData]);
@@ -60,15 +65,25 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, onSucces
         setSubjects(res.data.data);
       }
     } catch (err) {
-      console.error('AddBookModal: Error fetching subjects', err);
+      console.error('EditBookModal: Error fetching subjects', err);
     } finally {
       setLoadingSubjects(false);
     }
   };
 
+  const categories = Array.from(new Set(subjects.map(s => s.category || 'Chưa phân loại'))).sort();
+  const filteredSubjects = subjects
+    .filter(s => s.category === selectedCategory)
+    .sort((a, b) => (a.name || a.code || '').localeCompare(b.name || b.code || ''));
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCategory(e.target.value);
+    setFormData(prev => ({ ...prev, subject_code: '' }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -97,6 +112,7 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, onSucces
           keyword: '',
           subject_code: '',
         });
+        setSelectedCategory('');
       } else {
         enqueueSnackbar(res.data.message || 'Cập nhật sách thất bại', { variant: 'error' });
       }
@@ -186,20 +202,38 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, onSucces
               />
             </div>
 
-            {/* Category/Subject */}
+            {/* Category */}
             <div className="space-y-2">
               <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
-                <Tag className="h-3 w-3 text-brass" /> Chủ đề / Thể loại
+                <Tag className="h-3 w-3 text-brass" /> Thể loại chính
+              </label>
+              <select
+                value={selectedCategory}
+                onChange={handleCategoryChange}
+                className="w-full bg-white border border-oxford-blue/20 rounded-academic px-4 py-2.5 text-sm text-oxford-blue focus:outline-none focus:border-brass/30 font-mono font-black uppercase tracking-tight shadow-sm appearance-none cursor-pointer"
+              >
+                <option value="">Chọn thể loại</option>
+                {categories.map((cat, idx) => (
+                  <option key={`${cat}-${idx}`} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Subject */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-mono font-black text-oxford-blue/60 uppercase tracking-widest flex items-center gap-2">
+                <Tag className="h-3 w-3 text-brass" /> Chủ đề chi tiết
               </label>
               <select
                 name="subject_code"
+                disabled={!selectedCategory}
                 value={formData.subject_code}
                 onChange={handleChange}
-                className="w-full bg-white border border-oxford-blue/20 rounded-academic px-4 py-2.5 text-sm text-oxford-blue focus:outline-none focus:border-brass/30 font-mono font-black uppercase tracking-tight shadow-sm appearance-none cursor-pointer"
+                className="w-full bg-white border border-oxford-blue/20 rounded-academic px-4 py-2.5 text-sm text-oxford-blue focus:outline-none focus:border-brass/30 font-mono font-black uppercase tracking-tight shadow-sm appearance-none cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
               >
-                <option value="">Chọn chủ đề</option>
-                {subjects.map(s => (
-                  <option key={s.code} value={s.code}>{s.name} ({s.category})</option>
+                <option value="">{selectedCategory ? 'Chọn chủ đề chi tiết' : 'Vui lòng chọn thể loại trước'}</option>
+                {filteredSubjects.map((s, idx) => (
+                  <option key={`${s.code}-${idx}`} value={s.code}>{s.name} ({s.code})</option>
                 ))}
               </select>
               {loadingSubjects && <p className="text-[9px] font-mono animate-pulse text-brass">Đang tải...</p>}

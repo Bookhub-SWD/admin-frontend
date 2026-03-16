@@ -2,10 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { 
   RotateCcw, Search, BookOpen, AlertCircle, 
   CreditCard, CheckCircle2, User, 
-  Loader2, Calendar, Timer
+  Loader2, Calendar, Timer, Eye
 } from 'lucide-react';
 import api from '../services/api';
 import { useSnackbar } from 'notistack';
+import UserDetailModal from '../components/UserDetailModal';
 
 const Circulation = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -15,6 +16,8 @@ const Circulation = () => {
   const [viewMode, setViewMode] = useState<'loans' | 'fines'>('loans');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [roleFilter, setRoleFilter] = useState('');
+  const [roles, setRoles] = useState<{ id: number, name: string }[]>([]);
   const [stats, setStats] = useState({
     activeBorrows: 0,
     overdueItems: 0,
@@ -22,12 +25,15 @@ const Circulation = () => {
     totalFines: 0
   });
 
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const [borrowsRes, finesRes, statsRes] = await Promise.all([
-        api.get('/borrow/all'),
-        api.get('/payments/all'),
+        api.get('/borrow/all', { params: { role_id: roleFilter } }),
+        api.get('/payments/all', { params: { role_id: roleFilter } }),
         api.get('/payments/stats')
       ]);
 
@@ -50,11 +56,21 @@ const Circulation = () => {
     } finally {
       setLoading(false);
     }
-  }, [enqueueSnackbar]);
+  }, [enqueueSnackbar, roleFilter]);
+
+  const fetchRoles = useCallback(async () => {
+    try {
+      const res = await api.get('/users/roles');
+      if (res.data.ok) setRoles(res.data.data);
+    } catch (err) {
+      console.error('Circulation: Error fetching roles', err);
+    }
+  }, []);
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+    fetchRoles();
+  }, [fetchData, fetchRoles]);
 
   const filteredLoans = records.filter(r => {
     const matchesSearch = 
@@ -138,7 +154,17 @@ const Circulation = () => {
               className="bg-white border border-oxford-blue/20 rounded-academic pl-10 pr-4 py-3 text-xs text-charcoal focus:outline-none focus:border-brass/30 w-full uppercase font-mono font-black tracking-widest shadow-sm"
             />
           </div>
-          <div className="flex gap-4">
+          <div className="flex gap-4 items-center">
+              <select 
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                className="bg-white border border-oxford-blue/20 rounded-academic px-4 py-2 text-xs text-oxford-blue font-mono font-black uppercase tracking-widest cursor-pointer focus:outline-none focus:border-brass/30"
+              >
+                <option value="">Tất cả vai trò</option>
+                {roles.map(role => (
+                   <option key={role.id} value={role.id}>{role.name}</option>
+                ))}
+              </select>
               <select 
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
@@ -172,13 +198,14 @@ const Circulation = () => {
               <tr className="bg-oxford-blue text-parchment uppercase font-mono text-[10px] font-black tracking-[0.2em]">
                 <th className="px-8 py-5 border-r border-parchment/10">{viewMode === 'loans' ? 'Người mượn & Sách' : 'Chi tiết Phạt'}</th>
                 <th className="px-8 py-5 border-r border-parchment/10">{viewMode === 'loans' ? 'Thời hạn mượn' : 'Giao dịch mượn'}</th>
-                <th className="px-8 py-5">Trạng thái</th>
+                <th className="px-8 py-5 border-r border-parchment/10">Trạng thái</th>
+                <th className="px-8 py-5 text-right">Thao tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-oxford-blue/5">
               {loading ? (
                 <tr>
-                   <td colSpan={3} className="px-8 py-20 text-center">
+                   <td colSpan={4} className="px-8 py-20 text-center">
                     <div className="flex flex-col items-center gap-4">
                       <Loader2 className="h-8 w-8 text-oxford-blue animate-spin" />
                       <span className="text-xs font-mono font-black text-oxford-blue/40 uppercase tracking-[0.3em]">Đang truy xuất dữ liệu...</span>
@@ -187,7 +214,7 @@ const Circulation = () => {
                 </tr>
               ) : (viewMode === 'loans' ? filteredLoans : filteredFines).length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="px-8 py-20 text-center font-mono font-black text-charcoal/40 uppercase italic tracking-widest text-[10px]">
+                  <td colSpan={4} className="px-8 py-20 text-center font-mono font-black text-charcoal/40 uppercase italic tracking-widest text-[10px]">
                     Không tìm thấy dữ liệu phù hợp.
                   </td>
                 </tr>
@@ -235,6 +262,18 @@ const Circulation = () => {
                                 {isOverdue ? 'Quá hạn' : item.status === 'borrowed' ? 'Đang mượn' : item.status === 'returned' ? 'Đã trả' : item.status === 'requested' ? 'Yêu cầu' : item.status === 'cancelled' ? 'Đã huỷ' : item.status}
                             </div>
                           </td>
+                          <td className="px-8 py-6 text-right">
+                             <button 
+                               onClick={() => {
+                                 setSelectedUser(item.user);
+                                 setIsDetailModalOpen(true);
+                               }}
+                               className="p-2 text-oxford-blue/20 hover:text-brass transition-colors border border-transparent hover:border-brass/20 rounded-academic cursor-pointer"
+                               title="Xem chi tiết người mượn"
+                             >
+                                <Eye className="h-4 w-4" />
+                             </button>
+                          </td>
 
                         </tr>
                     );
@@ -259,16 +298,28 @@ const Circulation = () => {
                                     {item.borrow_record?.copy?.book?.title || 'Phạt hệ thống'}
                                 </div>
                                 <div className="text-[9px] font-mono font-black text-charcoal/30 uppercase tracking-widest mt-1">
-                                    Mã giao dịch: {item.id.substring(0, 8)}
+                                    Mã giao dịch: {item.id ? String(item.id).substring(0, 8) : 'N/A'}
                                 </div>
-                           </td>
-                           <td className="px-8 py-6 border-r border-oxford-blue/5">
-                              <span className={`text-[9px] font-mono font-black uppercase tracking-widest px-2 py-0.5 rounded-sm border ${
-                                item.status === 'paid' ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100 animate-pulse'
-                              }`}>
-                                {item.status === 'paid' ? 'Đã nộp' : item.status === 'pending' ? 'Chưa nộp' : item.status}
-                              </span>
-                           </td>
+                            </td>
+                            <td className="px-8 py-6 border-r border-oxford-blue/5">
+                               <span className={`text-[9px] font-mono font-black uppercase tracking-widest px-2 py-0.5 rounded-sm border ${
+                                 item.status === 'paid' ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100 animate-pulse'
+                               }`}>
+                                 {item.status === 'paid' ? 'Đã nộp' : item.status === 'pending' ? 'Chưa nộp' : item.status}
+                               </span>
+                            </td>
+                            <td className="px-8 py-6 text-right">
+                               <button 
+                                onClick={() => {
+                                  setSelectedUser(item.user);
+                                  setIsDetailModalOpen(true);
+                                }}
+                                className="p-2 text-oxford-blue/20 hover:text-brass transition-colors border border-transparent hover:border-brass/20 rounded-academic cursor-pointer"
+                                title="Xem chi tiết người mượn"
+                              >
+                                 <Eye className="h-4 w-4" />
+                              </button>
+                            </td>
 
                         </tr>
                     );
@@ -279,6 +330,12 @@ const Circulation = () => {
           </table>
         </div>
       </div>
+
+      <UserDetailModal 
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        user={selectedUser}
+      />
     </div>
   );
 };
