@@ -9,7 +9,7 @@ import Users from './pages/Users';
 import Reports from './pages/Reports';
 import Circulation from './pages/Circulation';
 import Borrows from './pages/Borrows';
-import Fines from './pages/Fines';
+import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -30,12 +30,14 @@ function App() {
               <Route path="events" element={<Events />} />
               <Route path="books" element={<Books />} />
               <Route path="borrows" element={<Borrows />} />
-              <Route path="fines" element={<Fines />} />
               <Route path="users" element={<Users />} />
               <Route path="circulation" element={<Circulation />} />
               <Route path="reports" element={<Reports />} />
             </Route>
           </Route>
+
+          {/* Catch-all 404 Route */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
     </SnackbarProvider>

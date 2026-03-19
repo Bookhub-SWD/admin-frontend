@@ -20,7 +20,7 @@ export const getCurrentSession = async () => {
 export const getUserProfile = async (userId: string): Promise<UserProfile | null> => {
     const { data, error } = await supabase
         .from('users')
-        .select('id, full_name, email, roles(id, name)')
+        .select('id, full_name, email, roles(id, name), avatar_url')
         .eq('id', userId)
         .single();
 

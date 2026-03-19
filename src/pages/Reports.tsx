@@ -21,6 +21,26 @@ const Reports = () => {
     summary: { total_books: 0, active_users: 0, revenue: 0, currently_borrowed: 0 }
   });
 
+  const [exporting, setExporting] = useState(false);
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const response = await api.get('/stats/export', { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `BookHub_Report_${new Date().toISOString().split('T')[0]}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      console.error('Reports: Error exporting data', err);
+    } finally {
+      setExporting(false);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -48,9 +68,17 @@ const Reports = () => {
           <h1 className="text-4xl font-serif font-black text-oxford-blue mb-2 tracking-tight uppercase">Báo cáo & Thống kê</h1>
           <p className="text-charcoal/70 font-sans font-medium italic">Xem báo cáo chi tiết về mượn trả sách, hoạt động của độc giả và tình trạng thư viện.</p>
         </div>
-        <button className="btn-academic flex items-center gap-2 text-xs shadow-lg shadow-oxford-blue/10 cursor-pointer">
-          <Download className="h-4 w-4" />
-          Xuất báo cáo (PDF)
+        <button 
+          onClick={handleExport}
+          disabled={exporting}
+          className="btn-academic flex items-center gap-2 text-xs shadow-lg shadow-oxford-blue/10 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {exporting ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Download className="h-4 w-4" />
+          )}
+          {exporting ? 'Đang chuẩn bị...' : 'Xuất báo cáo (Excel)'}
         </button>
       </div>
 

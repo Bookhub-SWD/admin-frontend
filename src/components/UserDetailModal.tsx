@@ -12,8 +12,10 @@ const UserDetailModal = ({ isOpen, onClose, user }: UserDetailModalProps) => {
   const [history, setHistory] = useState<any[]>([]);
   const [fines, setFines] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
+    if (isOpen) setImgError(false); // Reset error state when modal opens
     if (isOpen && user) {
       const fetchData = async () => {
         setLoading(true);
@@ -43,8 +45,12 @@ const UserDetailModal = ({ isOpen, onClose, user }: UserDetailModalProps) => {
         {/* Header */}
         <div className="p-8 border-b border-oxford-blue/10 bg-white/50 flex justify-between items-start relative z-10">
           <div className="flex gap-6 items-center">
-            <div className="h-20 w-20 rounded-academic bg-oxford-blue flex items-center justify-center text-3xl font-serif font-black text-parchment border-4 border-brass/30 shadow-xl">
-              {user.full_name?.[0] || user.email[0]}
+            <div className="h-20 w-20 rounded-academic bg-oxford-blue flex items-center justify-center text-3xl font-serif font-black text-parchment border-4 border-brass/30 shadow-xl overflow-hidden">
+              {user.avatar_url && !imgError ? (
+                <img src={user.avatar_url} alt={user.full_name} className="h-full w-full object-cover" onError={() => setImgError(true)} />
+              ) : (
+                user.full_name?.[0] || user.email[0]
+              )}
             </div>
             <div>
               <h2 className="text-3xl font-serif font-black text-oxford-blue tracking-tight uppercase">{user.full_name || 'Unknown User'}</h2>

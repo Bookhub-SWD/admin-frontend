@@ -2,7 +2,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, BookOpen, Users, FileBarChart,
   LogOut, Library, Calendar,
-  ChevronLeft, Menu, RotateCcw, Banknote
+  ChevronLeft, Menu, RotateCcw
 } from 'lucide-react';
 import { useState } from 'react';
 import { signOut, type UserProfile } from '../services/auth';
@@ -30,6 +30,7 @@ const AdminLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(true);
+  const [imgError, setImgError] = useState(false);
 
   // Read profile synchronously from localStorage
   const [profile] = useState<UserProfile | null>(() => {
@@ -61,7 +62,6 @@ const AdminLayout = () => {
     { icon: LayoutDashboard, label: 'BẢNG ĐIỀU KHIỂN', path: '/' },
     { icon: Calendar, label: 'QUẢN LÝ SỰ KIỆN', path: '/events' },
     { icon: RotateCcw, label: 'MƯỢN & TRẢ SÁCH', path: '/circulation' },
-    { icon: Banknote, label: 'QUẢN LÝ TIỀN PHẠT', path: '/fines' },
     { icon: BookOpen, label: 'QUẢN LÝ SÁCH', path: '/books' },
     { icon: Users, label: 'QUẢN LÝ NGƯỜI DÙNG', path: '/users' },
     { icon: FileBarChart, label: 'BÁO CÁO & THỐNG KÊ', path: '/reports' },
@@ -132,8 +132,8 @@ const AdminLayout = () => {
                 <div className="text-xs text-brass uppercase font-mono font-black tracking-widest mt-1">{profile?.roles?.name || 'Nhân viên'}</div>
               </div>
               <div className="h-12 w-12 rounded-academic bg-parchment flex items-center justify-center border-2 border-brass/50 shadow-md relative group overflow-hidden">
-                {profile?.avatar_url ? (
-                  <img src={profile.avatar_url} alt="User Avatar" className="h-full w-full object-cover" />
+                {profile?.avatar_url && !imgError ? (
+                  <img src={profile.avatar_url} alt="User Avatar" className="h-full w-full object-cover" onError={() => setImgError(true)} />
                 ) : (
                   <span className="text-oxford-blue font-serif font-black text-lg relative z-10">{getInitials(profile?.full_name || 'Thủ thư')}</span>
                 )}

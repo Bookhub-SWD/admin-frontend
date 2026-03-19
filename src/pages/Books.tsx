@@ -89,6 +89,7 @@ const Books = () => {
         enqueueSnackbar('Xóa sách thành công!', { variant: 'success' });
         fetchData(search, category, subject);
       }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error('Books: Error deleting book', err);
       enqueueSnackbar(err.response?.data?.message || 'Không thể xóa sách', { variant: 'error' });
@@ -105,6 +106,7 @@ const Books = () => {
       fetchData(search, category, subject);
     }, 500);
     return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, category, subject, unclassifiedOnly]);
 
   return (

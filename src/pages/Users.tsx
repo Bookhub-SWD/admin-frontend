@@ -17,6 +17,7 @@ interface User {
     id: number;
     name: string;
   };
+  avatar_url?: string;
 }
 
 const Users = () => {
@@ -38,6 +39,7 @@ const Users = () => {
     total_items: 0,
     limit: 10
   });
+  const [failedAvatars, setFailedAvatars] = useState<Set<string>>(new Set());
 
   const fetchUsers = useCallback(async (page = 1, query = '') => {
     setLoading(true);
@@ -203,8 +205,17 @@ const Users = () => {
                       <tr key={user.id} className="hover:bg-parchment/50 transition-colors group">
                         <td className="px-8 py-6 border-r border-oxford-blue/5">
                           <div className="flex items-center gap-4">
-                            <div className="h-10 w-10 rounded-academic bg-oxford-blue/5 flex items-center justify-center font-serif font-bold text-oxford-blue border border-oxford-blue/10">
-                              {user.full_name?.[0] || user.email[0]}
+                            <div className="h-10 w-10 rounded-academic bg-oxford-blue/5 flex items-center justify-center font-serif font-bold text-oxford-blue border border-oxford-blue/10 overflow-hidden">
+                              {user.avatar_url && !failedAvatars.has(user.id) ? (
+                                <img 
+                                  src={user.avatar_url} 
+                                  alt={user.full_name} 
+                                  className="h-full w-full object-cover" 
+                                  onError={() => setFailedAvatars(prev => new Set(prev).add(user.id))}
+                                />
+                              ) : (
+                                user.full_name?.[0] || user.email[0]
+                              )}
                             </div>
                             <div>
                               <div className="text-base font-serif font-black text-oxford-blue tracking-tight leading-none group-hover:text-brass transition-colors truncate max-w-[200px]">{user.full_name || 'Vô danh'}</div>
